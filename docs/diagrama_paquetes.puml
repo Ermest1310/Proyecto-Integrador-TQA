@@ -1,0 +1,146 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam packageBorderColor #2E86C1
+skinparam packageFontColor #1A5276
+skinparam packageFontSize 13
+skinparam interfaceBorderColor #2E86C1
+
+title <size:18><b>Diagrama de Paquetes - Sistema Web GAM</b></size>
+\n<size:12>Gimnasia Artística Masculina</size>
+
+package "<b>Presentación (Vistas Blade)</b>" as presentacion {
+  [layouts/] as layouts
+  [auth/] as auth
+  [dashboard/] as dashboard
+  [postulaciones/] as postulaciones_v
+  [entrenamientos/] as entrenamientos_v
+  [juez/] as juez_v
+  [analisis/] as analisis_v
+  [areamedica/] as areamedica_v
+  [competencias/] as competencias_v
+  [gimnasta/] as gimnasta_v
+  [admin/] as admin_v
+  [perfil/] as perfil_v
+  [lesiones/] as lesiones_v
+  [reportes/] as reportes_v
+}
+
+package "<b>Controladores (HTTP)</b>" as controladores {
+  [AuthController] as auth_c
+  [PostulacionController] as postulacion_c
+  [SesionEntrenamientoController] as sesion_c
+  [EntrenamientoController] as entrenamiento_c
+  [EvaluacionController] as evaluacion_c
+  [JuezController] as juez_c
+  [VideoAnalysisController] as video_c
+  [AnalisisMovimientoController] as movimiento_c
+  [LesionController] as lesion_c
+  [AreaMedicaController] as medica_c
+  [CompetenciaController] as competencia_c
+  [SolicitudNivelController] as nivel_c
+  [GimnastaController] as gimnasta_c
+  [DashboardController] as dashboard_c
+  [ReporteController] as reporte_c
+  [AparatoController] as aparato_c
+  [PerfilController] as perfil_c
+  [AuditController] as audit_c
+  [RolController] as rol_c
+  [PsicologiaController] as psicologia_c
+  [EvaluacionNutricionalController] as nutricion_c
+  [EvaluacionRespiratoriaController] as respira_c
+  [EvaluacionFisiologicaController] as fisiologica_c
+  [EvaluacionPsicologicaController] as psicologica_c
+  [AptitudMedicaController] as aptitud_c
+  [UsuarioUnificadoController] as usuario_c
+}
+
+package "<b>Modelos (Eloquent)</b>" as modelos {
+  [Usuario] as usuario_m
+  [Gimnasta] as gimnasta_m
+  [Entrenador] as entrenador_m
+  [Rol] as rol_m
+  [SesionEntrenamiento] as sesion_m
+  [Entrenamiento] as entrenamiento_m
+  [Aparato] as aparato_m
+  [Evaluacion] as evaluacion_m
+  [Descuento] as descuento_m
+  [DeduccionEjecucion] as deduccion_m
+  [Video] as video_m
+  [PoseResultado] as pose_m
+  [Lesion] as lesion_m
+  [Competencia] as competencia_m
+  [Postulacion] as postulacion_m
+  [Rutina] as rutina_m
+  [ElementoDetallado] as elemento_m
+  [ProgresoElemento] as progreso_m
+  [SolicitudNivel] as solicitud_m
+  [AuditLog] as audit_m
+}
+
+package "<b>Middleware</b>" as middleware {
+  [AuthMiddleware] as auth_mw
+  [RoleMiddleware] as role_mw
+  [CheckPermission] as perm_mw
+  [CheckNivelGimnasta] as nivel_mw
+  [SecurityLogger] as security_mw
+}
+
+package "<b>Servicios</b>" as servicios {
+  [AuditService] as audit_s
+  [FileUploadService] as upload_s
+  [PdfService] as pdf_s
+  [PermissionService] as perm_s
+  [SanitizationService] as sanitize_s
+  [UsuarioService] as usuario_s
+}
+
+package "<b>Análisis e IA</b>" as ia {
+  [MediaPipe Pose] as mediapipe
+  [OpenAI API] as openai
+  [Reglas FIG (JSON)] as reglas_fig
+  [Cálculo de Notas] as calculo_notas
+  [Detección de Ángulos] as angulos
+}
+
+package "<b>Base de Datos</b>" as bd {
+  [MySQL 8.0] as mysql
+  [27 Tablas] as tablas
+  [gimnasia_unificada] as esquema
+  [Backups] as backups
+}
+
+package "<b>Seguridad y Auditoría</b>" as seguridad {
+  [SecurityLogger] as sec_log
+  [AuditService] as audit_serv
+  [Detección SQLi/XSS] as deteccion
+  [Anti Fuerza Bruta] as anti_bruta
+  [Cifrado de Contraseñas] as cifrado
+}
+
+package "<b>Infraestructura</b>" as infra {
+  [Laravel 10 Framework] as laravel
+  [Laragon (Apache + PHP 8.1)] as laragon
+  [Vite + Axios] as vite
+  [FPDF] as fpdf
+  [Almacenamiento Local] as storage
+}
+
+' Relaciones entre paquetes
+presentacion --> controladores : "Solicitudes HTTP"
+presentacion ..> middleware : "Pasa por"
+controladores --> modelos : "CRUD"
+controladores --> servicios : "Delega lógica"
+controladores ..> middleware : "Protegido por"
+controladores --> ia : "Invocación IA"
+modelos --> bd : "ORM Eloquent"
+ia --> modelos : "Persiste resultados"
+servicios --> seguridad : "Registra auditoría"
+servicios --> modelos : "Operaciones"
+middleware --> seguridad : "Verifica permisos"
+seguridad --> bd : "Logs inmutables"
+servicios ..> infra : "Corre sobre"
+
+@enduml

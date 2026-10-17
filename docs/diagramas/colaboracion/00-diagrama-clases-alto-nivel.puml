@@ -1,0 +1,671 @@
+@startuml
+!define MODEL_BG #D4E6F1
+!define CONTROLLER_BG #F9E79F
+!define SERVICE_BG #D5F5E3
+!define MIDDLEWARE_BG #FADBD8
+!define REQUEST_BG #E8DAEF
+!define ACTOR_BG #FCF3CF
+!define VENDOR_BG #F2F3F4
+
+skinparam packageStyle rectangle
+skinparam classBorderColor #2C3E50
+skinparam arrowColor #2C3E50
+skinparam packageBorderColor #2C3E50
+skinparam packageFontColor #1A5276
+skinparam packageFontSize 14
+skinparam packageFontStyle bold
+skinparam defaultFontName Segoe UI
+skinparam classFontSize 11
+
+' ==================== MODELOS ====================
+package "Modelos - Core" #D4E6F1 {
+  class Usuario <<model>> {
+    {field} ID_Usuario : int (PK)
+    {field} NombreUsuario : string
+    {field} Contrasena : string
+    {field} Nombre : string
+    {field} Apellido : string
+    {field} Email : string
+    {field} CedulaIdentidad : string
+    {field} FechaNacimiento : date
+    {field} Nacionalidad : string
+    {field} Peso : float
+    {field} Altura : float
+    {field} Nivel : string {Principiante/Intermedio/Avanzado/Elite}
+    {field} ID_Rol : int (FK)
+    {field} activo : bool
+    {method} +rol() : Rol
+    {method} +lesiones() : Collection<Lesion>
+    {method} +sesionesComoGimnasta() : Collection<SesionEntrenamiento>
+    {method} +solicitudesNivel() : Collection<SolicitudNivel>
+    {method} +recomendacionesNivel() : Collection<SolicitudNivel>
+    {method} +getAuthPassword() : string
+  }
+
+  class Rol <<model>> {
+    {field} ID_Rol : int (PK)
+    {field} NombreRol : string {Entrenador/Gimnasta/Admin/Medico/Postulacion/Juez}
+    {field} activo : bool
+  }
+
+  class Gimnasta <<model>> {
+    {field} ID_Gimnasta : int (PK)
+    {field} ID_Usuario : int (FK)
+    {field} ID_Entrenador : int (FK)
+    {field} Nivel : string
+    {method} +usuario() : Usuario
+    {method} +aptitudesMedicas() : Collection<AptitudMedica>
+    {method} +evaluacionesNutricionales() : Collection<EvaluacionNutricional>
+    {method} +evaluacionesPsicologicas() : Collection<EvaluacionPsicologica>
+    {method} +evaluacionesFisiologicas() : Collection<EvaluacionFisiologica>
+    {method} +evaluacionesRespiratorias() : Collection<EvaluacionRespiratoria>
+  }
+}
+
+package "Modelos - Entrenamiento" #D4E6F1 {
+  class SesionEntrenamiento <<model>> {
+    {field} ID_Sesion : int (PK)
+    {field} ID_Gimnasta : int (FK)
+    {field} ID_Entrenador : int (FK)
+    {field} ID_Aparato : int (FK)
+    {field} Fecha : date
+    {field} Hora_Inicio : time
+    {field} Hora_Fin : time
+    {field} Duracion_Minutos : int
+    {field} Tipo_Asignacion : enum {Automatica/Manual}
+    {field} Estado : enum {Programada/En_Curso/Completada/Cancelada}
+    {field} Asistio_Gimnasta : bool
+    {field} Calificacion_Sesion : int [1-10]
+    {method} +asignarEntrenadorAutomatico() : int
+    {method} +entrenadoresDisponibles(fecha, hora) : Collection
+    {method} +scopeActivos() : Builder
+    {method} +scopeProgramadas() : Builder
+  }
+
+  class Entrenamiento <<model>> {
+    {field} ID_Entrenamiento : int (PK)
+    {field} ID_Gimnasta : int (FK)
+    {field} ID_Aparato : int (FK)
+    {field} Fecha : date
+    {field} Duracion : int
+    {field} Observaciones : text
+  }
+
+  class Aparato <<model>> {
+    {field} ID_Aparato : int (PK)
+    {field} Nombre : string {Suelo/Caballo/Anillas/Salto/Paralelas/Fija}
+    {field} Descripcion : text
+    {field} UltimoMantenimiento : date
+    {field} ProximoMantenimiento : date
+    {field} EstadoMantenimiento : enum {Operativo/Mantenimiento/Fuera_de_Servicio}
+    {method} +necesitaMantenimiento() : bool
+    {method} +estaOperativo() : bool
+    {method} +getEnMantenimientoAttribute() : bool
+  }
+}
+
+package "Modelos - Jueces y Competencias" #D4E6F1 {
+  class Competencia <<model>> {
+    {field} ID_Competencia : int (PK)
+    {field} NombreCompetencia : string
+    {field} Fecha : date
+    {field} Ubicacion : string
+  }
+
+  class EvaluacionesJuez <<model>> {
+    {field} ID_EvaluacionJuez : int (PK)
+    {field} ID_Gimnasta : int (FK)
+    {field} ID_Competencia : int (FK)
+    {field} ID_Aparato : int (FK)
+    {field} ID_Usuario : int (FK) {juez}
+    {field} video_ruta : string
+    {field} nota_final : float
+    {field} nota_dificultad : float
+    {field} nota_ejecucion : float
+    {field} estado : enum {pendiente/en_revision/confirmado}
+    {method} +gimnasta() : Usuario
+    {method} +juez() : Usuario
+    {method} +descuentos() : Collection<DescuentosJuez>
+    {method} +videos() : Collection<VideosEvaluacion>
+  }
+
+  class DescuentosJuez <<model>> {
+    {field} ID_Descuento : int (PK)
+    {field} ID_EvaluacionJuez : int (FK)
+    {field} ID_Elemento : int (FK)
+    {field} nombre_elemento : string
+    {field} tipo_error : enum {caida/paso/perdida_equilibrio/separacion_linea/falta_tecnica/otro}
+    {field} descuento_final : float
+    {field} angulo_detectado : float
+    {field} coordenadas_json : json
+  }
+
+  class DeduccionEjecucion <<model>> {
+    {field} ID_Deduccion : int (PK)
+    {field} ID_Aparato : int (FK)
+    {field} Tipo : string
+    {field} Descripcion : text
+    {field} Valor_Deduccion : float
+    {field} Criterios : text
+  }
+
+  class VideosEvaluacion <<model>> {
+    {field} ID_EvaluacionJuez : int (FK)
+    {field} nombre_original : string
+    {field} nombre_archivo : string
+    {field} ruta_archivo : string
+    {field} tamano_bytes : int
+    {field} analizado_mediapipe : bool
+    {field} resultado_analisis_json : json
+  }
+}
+
+package "Modelos - Médico" #D4E6F1 {
+  class Lesion <<model>> {
+    {field} ID_Lesion : int (PK)
+    {field} ID_Gimnasta : int (FK)
+    {field} ID_Medico : int (FK)
+    {field} Tipo : string
+    {field} ParteCuerpo : string
+    {field} ParteEspecifica : string
+    {field} Gravedad : enum {Leve/Moderada/Grave}
+    {field} Estado : enum {Lesionado/En_Rehabilitacion/Recuperada}
+    {field} Tratamiento : text
+    {field} FechaLesion : date
+    {field} FechaRecuperacion : date
+    {method} +getPartesCuerpo() : array
+    {method} +getTiposLesion() : array
+    {method} +getGravedades() : array
+    {method} +getEstados() : array
+  }
+
+  class AptitudMedica <<model>> {
+    {field} ID_Aptitud : int (PK)
+    {field} ID_Gimnasta : int (FK)
+    {field} FechaCertificacion : datetime
+    {field} AptoParaEntrenar : bool
+    {field} RestriccionesMedicas : text
+    {field} Diagnostico : text
+    {field} MedicoResponsable : string
+  }
+
+  class EvaluacionNutricional <<model>> {
+    {field} ID_Gimnasta : int (FK)
+    {field} FechaEvaluacion : datetime
+    {field} Peso : float
+    {field} Altura : float
+    {field} IMC : float
+    {field} PorcentajeGrasa : float
+    {field} MasaMuscular : float
+    {field} NivelHidratacion : string
+    {field} Recomendaciones : text
+  }
+
+  class EvaluacionPsicologica <<model>> {
+    {field} ID_Gimnasta : int (FK)
+    {field} FechaEvaluacion : datetime
+    {field} NivelAnsiedad : int [0-10]
+    {field} NivelEstres : int [0-10]
+    {field} NivelMotivacion : int [0-10]
+    {field} CalidadSueno : int [0-10]
+    {field} Concentracion : int [0-10]
+    {field} Recomendaciones : text
+  }
+
+  class EvaluacionFisiologica <<model>> {
+    {field} ID_Gimnasta : int (FK)
+    {field} FechaEvaluacion : datetime
+    {field} FCReposo : int
+    {field} FCEsfuerzo : int
+    {field} PresionSistolica : int
+    {field} PresionDiastolica : int
+    {field} SaturacionOxigeno : float
+  }
+
+  class EvaluacionRespiratoria <<model>> {
+    {field} ID_Gimnasta : int (FK)
+    {field} FechaEvaluacion : datetime
+    {field} CapacidadPulmonar : float
+    {field} SaturacionOxigeno : float
+    {field} DiagnosticoRespiratorio : text
+  }
+}
+
+package "Modelos - Video y Análisis" #D4E6F1 {
+  class Video <<model>> {
+    {field} ID_Video : int (PK)
+    {field} ID_Usuario : int (FK)
+    {field} NombreArchivo : string
+    {field} NombreOriginal : string
+    {field} Tipo : string
+    {field} Tamano : int
+    {method} +poseResultados() : Collection<PoseResultado>
+  }
+
+  class PoseResultado <<model>> {
+    {field} ID_Video : int (FK)
+    {field} FrameNum : int
+    {field} Landmarks : json {33 landmarks}
+    {field} AngulosCalculados : json
+  }
+}
+
+package "Modelos - Postulaciones y Niveles" #D4E6F1 {
+  class Postulacion <<model>> {
+    {field} ID_Postulacion : int (PK)
+    {field} Email : string
+    {field} Nombre, Apellido : string
+    {field} CedulaIdentidad : string
+    {field} Peso, Altura, IMC : float
+    {field} Nivel : enum {Principiante/Intermedio/Avanzado/Elite}
+    {field} estado : enum {pendiente/aprobada/rechazada}
+    {field} recomendaciones_sistema : text
+    {field} fecha_postulacion : datetime
+    {field} revisado_por : int (FK)
+    {method} +validarCedula(cedula, pais) : bool
+    {method} +generarRecomendaciones() : string
+  }
+
+  class SolicitudNivel <<model>> {
+    {field} ID_Solicitud : int (PK)
+    {field} ID_Gimnasta : int (FK)
+    {field} nivel_actual : string
+    {field} nivel_solicitado : string
+    {field} tipo : enum {evaluacion/recomendacion}
+    {field} ID_Entrenador : int (FK)
+    {field} estado : enum {pendiente/aprobada/rechazada}
+    {field} comentarios_gimnasta : text
+    {field} comentarios_entrenador : text
+    {field} comentarios_admin : text
+    {method} +siguienteNivel(actual) : string
+    {method} +puedeSubirNivel(gimnasta) : bool
+  }
+}
+
+' ==================== CONTROLADORES ====================
+package "Controladores" #F9E79F {
+  class AuthController <<controller>> {
+    {method} +showLogin() : View
+    {method} +login(Request) : Redirect
+    {method} +register(Request) : Redirect
+    {method} +logout() : Redirect
+  }
+
+  class DashboardController <<controller>> {
+    {method} +index() : View {redirect por rol}
+    {method} +adminInicio() : View
+    {method} +adminHistorial() : View
+  }
+
+  class UsuarioUnificadoController <<controller>> {
+    {method} +index() : View
+    {method} +store(StoreUsuarioRequest) : Redirect
+    {method} +edit($id) : View
+    {method} +update(UpdateUsuarioRequest, $id) : Redirect
+    {method} +destroy($id) : Redirect
+    {method} +reactivar($id) : Redirect
+  }
+
+  class PostulacionController <<controller>> {
+    {method} +index() : View
+    {method} +aprobar($id) : Redirect
+    {method} +rechazar($id) : Redirect
+    {method} +detalle($id) : View
+  }
+
+  class SolicitudNivelController <<controller>> {
+    {method} +index() : View {gimnasta}
+    {method} +store(Request) : Redirect
+    {method} +indexEntrenador() : View
+    {method} +recomendar(Request) : Redirect
+    {method} +indexAdmin() : View
+    {method} +aprobar($id) : Redirect
+    {method} +rechazar($id) : Redirect
+    {method} +aprobarEntrenador($id) : Redirect
+    {method} +rechazarEntrenador($id) : Redirect
+  }
+
+  class SesionEntrenamientoController <<controller>> {
+    {method} +index() : View
+    {method} +historial() : View
+    {method} +create() : View
+    {method} +store(SesionEntrenamientoRequest) : Redirect
+    {method} +edit($id) : View
+    {method} +update(Request, $id) : Redirect
+    {method} +destroy($id) : Redirect
+    {method} +getEntrenadoresDisponibles() : Json
+    {method} +validarDisponibilidad() : Json
+  }
+
+  class EntrenadorController <<controller>> {
+    {method} +dashboard() : View
+    {method} +misGimnastas() : View
+    {method} +crearGimnasta() : View
+    {method} +guardarGimnasta(Request) : Redirect
+    {method} +verGimnasta($id) : View
+    {method} +dashboardGimnasta($id) : View
+    {method} +calendario() : View
+  }
+
+  class GimnastaController <<controller>> {
+    {method} +dashboard() : View
+    {method} +miProgreso() : View
+    {method} +misSesiones() : View
+    {method} +crearSesion() : View
+    {method} +guardarSesion(Request) : Redirect
+    {method} +cancelarSesion($id) : Redirect
+    {method} +calendario() : View
+  }
+
+  class JuezController <<controller>> {
+    {method} +dashboard() : View
+    {method} +createEvaluation() : View
+    {method} +storeEvaluation(Request) : Redirect
+    {method} +evaluar($id) : View
+    {method} +storeScore($id, Request) : Json
+    {method} +storeDeduction($id, Request) : Json
+    {method} +deleteDeduction($evalId, $dedId) : Json
+    {method} +getLandmarks($id) : Json
+    {method} +getPendingGymnasts() : Json
+  }
+
+  class LesionController <<controller>> {
+    {method} +index() : View
+    {method} +create() : View
+    {method} +store(LesionRequest) : Redirect
+    {method} +show($id) : View
+    {method} +edit($id) : View
+    {method} +update(Request, $id) : Redirect
+    {method} +destroy($id) : Redirect
+    {method} +reactivar($id) : Redirect
+  }
+
+  class VideoAnalysisController <<controller>> {
+    {method} +index() : View
+    {method} +videoUpload() : View
+    {method} +uploadVideo(Request) : Json
+    {method} +savePoseResults(Request) : Json
+    {method} +analyzeWithAI(Request) : Json
+    {method} +angleAnalysis() : View
+    {method} +statistics() : View
+  }
+
+  class AnalisisMovimientoController <<controller>> {
+    {method} +dashboard() : View
+    {method} +aptitudIndex() : View
+    {method} +aptitudStore(Request) : Redirect
+    {method} +nutricionalIndex/Store() : View/Redirect
+    {method} +respiratoriaIndex/Store() : View/Redirect
+    {method} +psicologicaIndex/Store() : View/Redirect
+    {method} +fisiologicaIndex/Store() : View/Redirect
+  }
+
+  class AparatoController <<controller>> {
+    {method} +index() : View
+    {method} +store(AparatoRequest) : Redirect
+    {method} +edit($id) : View
+    {method} +update(Request, $id) : Redirect
+    {method} +destroy($id) : Redirect
+    {method} +reactivar($id) : Redirect
+    {method} +desactivar($id) : Redirect
+    {method} +finalizarMantenimiento($id) : Redirect
+  }
+
+  class CompetenciaController <<controller>> {
+    {method} +index() : View
+    {method} +store(CompetenciaRequest) : Redirect
+    {method} +edit($id) : View
+    {method} +update(Request, $id) : Redirect
+    {method} +destroy($id) : Redirect
+  }
+
+  class MedicoController <<controller>> {
+    {method} +dashboard() : View
+    {method} +verGimnasta($id) : View
+    {method} +historialMedico($id) : View
+  }
+
+  class AreaMedicaController <<controller>> {
+    {method} +index() : View
+    {method} +psicologia() : View
+    {method} +chatbot() : View
+    {method} +handleChatbotMessage(Request) : Json
+    {method} +nutricion() : View
+    {method} +fisioterapia() : View
+  }
+
+  class ReporteController <<controller>> {
+    {method} +index() : View
+    {method} +reporteCompleto() : View
+    {method} +exportarPdf() : Binary
+    {method} +backup() : View
+    {method} +crearBackup() : Redirect
+    {method} +descargarBackup($filename) : Binary
+  }
+
+  class AuditController <<controller>> {
+    {method} +index(Request) : View
+  }
+
+  class PsicologiaController <<controller>> {
+    {method} +procesar(Request) : Json {sentimiento, ansiedad, burnout}
+  }
+
+  class SEPIController <<controller>> {
+    {method} +index() : View {métricas y recomendaciones SEPI}
+  }
+}
+
+' ==================== SERVICIOS ====================
+package "Servicios" #D5F5E3 {
+  class AuditService <<service>> {
+    {method} +log(evento, detalles) : void
+    {method} +created(model) : void
+    {method} +updated(model) : void
+    {method} +deleted(model) : void
+    {method} +login(usuario) : void
+    {method} +logout(usuario) : void
+    {method} +security(evento) : void
+    {method} +critical(evento) : void
+  }
+
+  class PermissionService <<service>> {
+    {method} +can(usuario, permiso) : bool
+    {method} +isAdmin(usuario) : bool
+    {method} +canManageUsers(usuario) : bool
+    {method} +canViewDashboard(usuario) : bool
+    {method} +abort(permiso) : void {abort 403}
+  }
+
+  class SanitizationService <<service>> {
+    {method} +sanitizeString(input) : string
+    {method} +sanitizeEmail(email) : string
+    {method} +sanitizeName(name) : string
+    {method} +detectMalicious(input) : bool
+  }
+
+  class FileUploadService <<service>> {
+    {method} +uploadSecure(file, path) : string
+    {method} +deleteFile(path) : bool
+  }
+
+  class PdfService <<service>> {
+    {method} +generarReporteCompleto() : array
+    {method} +generarReporteGimnastas() : array
+    {method} +generarReporteSesiones() : array
+  }
+
+  class UsuarioService <<service>> {
+    {method} +getValidationRules(rol) : array
+    {method} +getValidationMessages() : array
+    {method} +getNacionalidades() : array
+  }
+}
+
+' ==================== MIDDLEWARE ====================
+package "Middleware" #FADBD8 {
+  class AuthMiddleware <<middleware>> {
+    {method} +handle($request, Closure $next) : Response
+  }
+
+  class RoleMiddleware <<middleware>> {
+    {method} +handle($request, Closure $next, $roles) : Response
+  }
+
+  class CheckPermission <<middleware>> {
+    {method} +handle($request, Closure $next, $permiso) : Response
+  }
+
+  class SecurityLogger <<middleware>> {
+    {method} +handle($request, Closure $next) : Response
+  }
+
+  class SanitizeInput <<middleware>> {
+    {method} +handle($request, Closure $next) : Response
+  }
+
+  class ValidateFileUploads <<middleware>> {
+    {method} +handle($request, Closure $next) : Response
+  }
+
+  class CheckNivelGimnasta <<middleware>> {
+    {method} +handle($request, Closure $next, $nivel_minimo) : Response
+  }
+
+  class ValidatePostulacion <<middleware>> {
+    {method} +handle($request, Closure $next) : Response
+  }
+}
+
+' ==================== FORM REQUESTS ====================
+package "Form Requests" #E8DAEF {
+  class SesionEntrenamientoRequest <<request>> {
+    {method} +rules() : array {130+ líneas validación}
+    {method} +messages() : array
+    {method} +withValidator($validator) : void
+  }
+  class LesionRequest <<request>> {
+    {method} +rules() : array
+    {method} +messages() : array
+  }
+  class AparatoRequest <<request>> {
+    {method} +rules() : array
+  }
+  class CompetenciaRequest <<request>> {
+    {method} +rules() : array
+  }
+  class UsuarioRequest <<request>> {
+    {method} +rules() : array
+  }
+}
+
+' ==================== RELACIONES ====================
+
+' --- Herencia ---
+Gimnasta -|> Usuario : "extends"
+
+' --- Asociaciones Core ---
+Usuario "1" --> "1" Rol : tiene
+Usuario "1" --> "*" Lesion : "registra como médico"
+Usuario "1" --> "*" Lesion : "sufre como gimnasta"
+Usuario "1" --> "*" SesionEntrenamiento : "participa como gimnasta"
+Usuario "1" --> "*" SesionEntrenamiento : "supervisa como entrenador"
+Usuario "1" --> "*" EvaluacionesJuez : "evalúa como juez"
+Usuario "1" --> "*" EvaluacionesJuez : "es evaluado como gimnasta"
+Usuario "1" --> "*" Postulacion : revisa
+Usuario "1" --> "*" SolicitudNivel : recomienda como entrenador
+Usuario "1" --> "*" SolicitudNivel : solicita como gimnasta
+Usuario "1" --> "*" Video : sube
+
+' --- Aparato ---
+SesionEntrenamiento "*" --> "1" Aparato : utiliza
+Entrenamiento "*" --> "1" Aparato : utiliza
+EvaluacionesJuez "*" --> "1" Aparato : corresponde
+DeduccionEjecucion "*" --> "1" Aparato : define reglas
+
+' --- Evaluaciones Médicas ---
+Gimnasta "1" --> "*" AptitudMedica : posee
+Gimnasta "1" --> "*" EvaluacionNutricional : posee
+Gimnasta "1" --> "*" EvaluacionPsicologica : posee
+Gimnasta "1" --> "*" EvaluacionFisiologica : posee
+Gimnasta "1" --> "*" EvaluacionRespiratoria : posee
+
+' --- Jueces ---
+EvaluacionesJuez "1" --> "*" DescuentosJuez : contiene
+EvaluacionesJuez "1" --> "*" VideosEvaluacion : contiene
+EvaluacionesJuez "*" --> "1" Competencia : pertenece
+
+' --- Video ---
+Video "1" --> "*" PoseResultado : genera
+
+' --- Postulacion/Nivel ---
+SolicitudNivel "*" --> "1" Gimnasta : afecta
+
+' --- Controladores usan Modelos ---
+AuthController ..> Usuario : <<use>>
+AuthController ..> Rol : <<use>>
+PostulacionController ..> Postulacion : <<use>>
+PostulacionController ..> Usuario : <<use>>
+SolicitudNivelController ..> SolicitudNivel : <<use>>
+SolicitudNivelController ..> Usuario : <<use>>
+SesionEntrenamientoController ..> SesionEntrenamiento : <<use>>
+SesionEntrenamientoController ..> Aparato : <<use>>
+SesionEntrenamientoController ..> Usuario : <<use>>
+JuezController ..> EvaluacionesJuez : <<use>>
+JuezController ..> DescuentosJuez : <<use>>
+JuezController ..> DeduccionEjecucion : <<use>>
+LesionController ..> Lesion : <<use>>
+LesionController ..> Usuario : <<use>>
+VideoAnalysisController ..> Video : <<use>>
+VideoAnalysisController ..> PoseResultado : <<use>>
+AnalisisMovimientoController ..> Gimnasta : <<use>>
+AnalisisMovimientoController ..> AptitudMedica : <<use>>
+AnalisisMovimientoController ..> EvaluacionNutricional : <<use>>
+AnalisisMovimientoController ..> EvaluacionPsicologica : <<use>>
+AnalisisMovimientoController ..> EvaluacionFisiologica : <<use>>
+AnalisisMovimientoController ..> EvaluacionRespiratoria : <<use>>
+AreaMedicaController ..> Lesion : <<use>>
+ReporteController ..> PdfService : <<use>>
+AparatoController ..> Aparato : <<use>>
+CompetenciaController ..> Competencia : <<use>>
+
+' --- Controladores usan Servicios ---
+AuthController ..> AuditService : <<use>>
+AuthController ..> SanitizationService : <<use>>
+PostulacionController ..> AuditService : <<use>>
+PostulacionController ..> SanitizationService : <<use>>
+SesionEntrenamientoController ..> AuditService : <<use>>
+JuezController ..> AuditService : <<use>>
+LesionController ..> AuditService : <<use>>
+VideoAnalysisController ..> AuditService : <<use>>
+VideoAnalysisController ..> FileUploadService : <<use>>
+AparatoController ..> AuditService : <<use>>
+ReporteController ..> AuditService : <<use>>
+
+' --- Middleware protege Controladores ---
+AuthMiddleware ..> AuthController : <<protect>>
+CheckPermission ..> PostulacionController : <<protect>>
+CheckPermission ..> AparatoController : <<protect>>
+CheckPermission ..> CompetenciaController : <<protect>>
+CheckNivelGimnasta ..> GimnastaController : <<protect>>
+SanitizeInput ..> AuthController : <<sanitize>>
+SanitizeInput ..> PostulacionController : <<sanitize>>
+ValidateFileUploads ..> VideoAnalysisController : <<validate>>
+ValidatePostulacion ..> PostulacionController : <<rate_limit>>
+
+' --- Form Requests validan Controladores ---
+SesionEntrenamientoRequest ..> SesionEntrenamientoController : <<validates>>
+LesionRequest ..> LesionController : <<validates>>
+AparatoRequest ..> AparatoController : <<validates>>
+CompetenciaRequest ..> CompetenciaController : <<validates>>
+UsuarioRequest ..> UsuarioUnificadoController : <<validates>>
+
+legend right
+  <<model>> = Eloquent Model
+  <<controller>> = Controller
+  <<service>> = Service Layer
+  <<middleware>> = Middleware
+  <<request>> = Form Request
+endlegend
+
+@enduml

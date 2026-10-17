@@ -1,0 +1,376 @@
+@startuml
+skinparam rectangle {
+  BorderColor #2C3E50
+  FontSize 12
+  FontStyle bold
+}
+skinparam arrowColor #2C3E50
+skinparam defaultFontName Segoe UI
+skinparam packageBorderColor #2C3E50
+
+title "Mapa Navegacional - Sistema Gimnasia Unificada"
+
+actor "Visitante" as visitor
+actor "Gimnasta" as gym
+actor "Entrenador" as coach
+actor "Médico" as doc
+actor "Juez" as judge
+actor "Admin" as admin
+
+' ============ PÚBLICO ============
+rectangle "#FADBD8\n" as public_section {
+  rectangle "GET /login\nshowLogin()\nAuthController" as login
+  rectangle "POST /login\nlogin()\nAuthController" as login_post
+  rectangle "POST /register\nregister()\nAuthController" as register
+  rectangle "GET /postulaciones (público)\nstore()\nPostulacionController" as postular
+}
+
+' ============ AUTENTICACIÓN ============
+rectangle "#F9E79F\nauth.custom" as auth_gate
+
+' ============ ADMIN ============
+package "ADMINISTRADOR" #F9E79F {
+  rectangle "GET /\nDashboardController@index" as admin_dash
+
+  rectangle "Usuarios" as admin_users {
+    rectangle "GET /usuarios-unificado\nUsuarioUnificadoController@index" as users_list
+    rectangle "GET/POST create/store\nUsuarioUnificadoController" as users_create
+    rectangle "GET/PUT edit/update\nUsuarioUnificadoController" as users_edit
+  }
+
+  rectangle "Roles" as admin_roles {
+    rectangle "GET /roles\nRolController@index" as roles_list
+  }
+
+  rectangle "Postulaciones" as admin_post {
+    rectangle "GET /postulaciones\nPostulacionController@index" as post_list
+    rectangle "POST /{id}/aprobar" as post_approve
+    rectangle "POST /{id}/rechazar" as post_reject
+    rectangle "GET /{id}/detalle" as post_detail
+  }
+
+  rectangle "Niveles" as admin_nivel {
+    rectangle "GET /admin/solicitudes-nivel\nSolicitudNivelController@indexAdmin" as nivel_list
+    rectangle "POST /aprobar" as nivel_approve
+    rectangle "POST /rechazar" as nivel_reject
+  }
+
+  rectangle "Aparatos" as admin_ap {
+    rectangle "GET /aparatos\nAparatoController@index" as ap_list
+    rectangle "POST /store" as ap_create
+    rectangle "POST /edit/{id}" as ap_edit
+    rectangle "POST /destroy/{id}" as ap_destroy
+    rectangle "POST /desactivar/{id}" as ap_disable
+    rectangle "POST /finalizarMantenimiento/{id}" as ap_maintenance
+  }
+
+  rectangle "Competencias" as admin_comp {
+    rectangle "GET /competencias\nCompetenciaController@index" as comp_list
+    rectangle "POST /store" as comp_create
+    rectangle "POST /edit/{id}" as comp_edit
+  }
+
+  rectangle "Entrenamientos" as admin_ent {
+    rectangle "GET /entrenamientos\nEntrenamientoController@index" as ent_list
+  }
+
+  rectangle "Sesiones" as admin_ses {
+    rectangle "GET /sesiones\nSesionEntrenamientoController@index" as ses_list
+    rectangle "GET/POST create/store" as ses_create
+    rectangle "GET/PUT edit/update" as ses_edit
+  }
+
+  rectangle "Médico" as admin_med {
+    rectangle "GET /lesiones\nLesionController@index" as les_list
+    rectangle "GET /areamedica" as area_med
+  }
+
+  rectangle "Reportes" as admin_reports {
+    rectangle "GET /admin/reportes\nReporteController@index" as reports_dash
+    rectangle "GET /reportes/completo" as reports_full
+    rectangle "GET /reportes/exportar-pdf" as reports_pdf
+    rectangle "GET /reportes/backup" as reports_backup
+    rectangle "POST /crear-backup" as reports_create
+    rectangle "GET /descargar-backup/{file}" as reports_download
+  }
+
+  rectangle "Auditoría" as admin_audit {
+    rectangle "GET /admin/audit\nAuditController@index" as audit_log
+  }
+
+  rectangle "Historial" as admin_hist {
+    rectangle "GET /admin/historial\nDashboardController@adminHistorial" as history
+  }
+
+  rectangle "Perfil" as admin_profile {
+    rectangle "GET /perfil\nPerfilController@show" as profile_view
+    rectangle "PUT /perfil\nPerfilController@update" as profile_update
+  }
+}
+
+' ============ ENTRENADOR ============
+package "ENTRENADOR" #D5F5E3 {
+  rectangle "GET /entrenador/dashboard\nEntrenadorController@dashboard" as coach_dash
+
+  rectangle "Gimnastas" as coach_gym {
+    rectangle "GET /entrenador/gimnastas\nmisGimnastas()" as coach_gym_list
+    rectangle "GET /crear-gimnasta\ncrearGimnasta()" as coach_gym_create
+    rectangle "POST /guardar-gimnasta" as coach_gym_store
+    rectangle "GET /gimnasta/{id}\nverGimnasta()" as coach_gym_view
+    rectangle "GET /gimnasta/{id}/dashboard\ndashboardGimnasta()" as coach_gym_dash
+  }
+
+  rectangle "Sesiones" as coach_ses {
+    rectangle "GET /entrenador/sesiones\nmisSesiones()" as coach_ses_list
+    rectangle "GET /sesiones/crear\nSesionEntrenamientoController@create" as coach_ses_create
+  }
+
+  rectangle "Calendario" as coach_cal {
+    rectangle "GET /entrenador/calendario\ncalendario()" as coach_cal_view
+  }
+
+  rectangle "Niveles" as coach_nivel {
+    rectangle "GET /entrenador/solicitudes-nivel\nSolicitudNivelController@indexEntrenador" as coach_nivel_list
+    rectangle "POST /recomendar" as coach_nivel_recom
+    rectangle "POST /{id}/aprobar\naprobarEntrenador()" as coach_nivel_aprove
+    rectangle "POST /{id}/rechazar\nrechazarEntrenador()" as coach_nivel_reject
+  }
+
+  rectangle "Perfil" as coach_profile {
+    rectangle "GET/PUT /perfil" as coach_profile_view
+  }
+}
+
+' ============ GIMNASTA ============
+package "GIMNASTA" #D4E6F1 {
+  rectangle "GET /gimnasta/dashboard\nGimnastaController@dashboard" as gym_dash
+
+  rectangle "Progreso" as gym_prog {
+    rectangle "GET /gimnasta/progreso\nmiProgreso()" as gym_progress
+  }
+
+  rectangle "Sesiones" as gym_ses {
+    rectangle "GET /gimnasta/sesiones\nmisSesiones()" as gym_ses_list
+    rectangle "GET /sesiones/crear\ncrearSesion()" as gym_ses_create
+    rectangle "POST /sesiones\nguardarSesion()" as gym_ses_store
+    rectangle "DELETE /sesiones/{id}\ncancelarSesion()" as gym_ses_cancel
+    rectangle "GET /historial\nhistorial()" as gym_ses_hist
+  }
+
+  rectangle "Calendario" as gym_cal {
+    rectangle "GET /gimnasta/calendario\ncalendario()" as gym_cal_view
+  }
+
+  rectangle "Entrenador" as gym_coach {
+    rectangle "GET /gimnasta/entrenador\nmiEntrenador()" as gym_coach_view
+  }
+
+  rectangle "Niveles" as gym_nivel {
+    rectangle "GET /gimnasta/solicitudes-nivel\nSolicitudNivelController@index" as gym_nivel_list
+    rectangle "POST /gimnasta/solicitudes-nivel\nstore()" as gym_nivel_create
+  }
+
+  rectangle "Perfil" as gym_profile {
+    rectangle "GET/PUT /perfil" as gym_profile_view
+  }
+}
+
+' ============ MÉDICO ============
+package "MÉDICO" #E8DAEF {
+  rectangle "GET /medico/dashboard\nMedicoController@dashboard" as doc_dash
+
+  rectangle "Pacientes" as doc_pat {
+    rectangle "GET /medico/gimnasta/{id}\nverGimnasta()" as doc_pat_view
+    rectangle "GET /medico/historial/{id}\nhistorialMedico()" as doc_pat_hist
+  }
+
+  rectangle "Lesiones" as doc_les {
+    rectangle "GET /medico/lesiones\nMedicoLesionController@index" as doc_les_list
+    rectangle "GET/POST create/store" as doc_les_create
+    rectangle "GET/PUT edit/update" as doc_les_edit
+  }
+
+  rectangle "Área Médica" as doc_area {
+    rectangle "GET /areamedica\nAreaMedicaController@index" as doc_area_list
+    rectangle "GET /areamedica/fisioterapia" as doc_fisio
+    rectangle "GET /areamedica/nutricion" as doc_nutri
+    rectangle "GET /areamedica/psicologia" as doc_psico
+    rectangle "GET /areamedica/psicologia/chatbot" as doc_chatbot
+    rectangle "GET /areamedica/medicina" as doc_medicina
+  }
+
+  rectangle "Análisis" as doc_a {
+    rectangle "GET /analisis/movimiento-dashboard\nAnalisisMovimientoController" as doc_analisis
+    rectangle "GET/POST /analisis/aptitud" as doc_aptitud
+    rectangle "GET/POST /analisis/nutricional" as doc_nutricional
+    rectangle "GET/POST /analisis/respiratoria" as doc_respiratoria
+    rectangle "GET/POST /analisis/psicologica" as doc_psicologica
+    rectangle "GET/POST /analisis/fisiologica" as doc_fisiologica
+  }
+
+  rectangle "Perfil" as doc_profile {
+    rectangle "GET/PUT /perfil" as doc_profile_view
+  }
+}
+
+' ============ JUEZ ============
+package "JUEZ" #FCF3CF {
+  rectangle "GET /juez/dashboard\nJuezController@dashboard" as judge_dash
+
+  rectangle "Evaluaciones" as judge_eval {
+    rectangle "GET /juez/crear\ncreateEvaluation()" as judge_create
+    rectangle "POST /juez/store\nstoreEvaluation()" as judge_store
+    rectangle "GET /juez/evaluar/{id}\nevaluar()" as judge_eval_view
+    rectangle "POST /juez/evaluar/{id}/score\nstoreScore()" as judge_score
+    rectangle "POST /evaluar/{id}/deduccion\nstoreDeduction()" as judge_ded
+    rectangle "GET /juez/pendientes\ngetPendingGymnasts()" as judge_pending
+  }
+
+  rectangle "Perfil" as judge_profile {
+    rectangle "GET/PUT /perfil" as judge_profile_view
+  }
+}
+
+' ============ ANÁLISIS DE VIDEO (transversal) ============
+package "ANÁLISIS DE VIDEO (todos los roles)" #F2F3F4 {
+  rectangle "GET /analisis\nVideoAnalysisController@index" as video_index
+  rectangle "GET /analisis/video\nvideoUpload()" as video_upload
+  rectangle "POST /analisis/upload\nuploadVideo()" as video_upload_post
+  rectangle "POST /analisis/pose-results\nsavePoseResults()" as video_pose
+  rectangle "POST /analisis/openai\nanalyzeWithAI()" as video_openai
+  rectangle "GET /analisis/angulo\nangleAnalysis()" as video_angle
+  rectangle "GET /analisis/estadisticas\nstatistics()" as video_stats
+}
+
+' ============ FLECHAS - RUTAS PÚBLICAS ============
+visitor --> login : GET
+visitor --> register : POST
+login --> login_post : POST credenciales
+login_post --> auth_gate : Auth exitoso
+login_post --> login : fallo
+register --> auth_gate : Registro exitoso
+
+' ============ FLECHAS - AUTH GATE ============
+auth_gate --> admin_dash : Rol=Administrador
+auth_gate --> coach_dash : Rol=Entrenador
+auth_gate --> gym_dash : Rol=Gimnasta
+auth_gate --> doc_dash : Rol=Medico
+auth_gate --> judge_dash : Rol=Juez
+
+' ============ FLECHAS - ADMIN ============
+admin_dash --> admin_users : Navega
+admin_dash --> admin_roles
+admin_dash --> admin_post
+admin_dash --> admin_nivel
+admin_dash --> admin_ap
+admin_dash --> admin_comp
+admin_dash --> admin_ent
+admin_dash --> admin_ses
+admin_dash --> admin_med
+admin_dash --> admin_reports
+admin_dash --> admin_audit
+admin_dash --> admin_hist
+admin_dash --> admin_profile
+admin_dash --> video_index : Análisis
+
+users_list --> users_create : Nuevo
+users_list --> users_edit : Editar
+post_list --> post_detail : Ver
+post_list --> post_approve : Aprobar
+post_list --> post_reject : Rechazar
+nivel_list --> nivel_approve : Aprobar
+nivel_list --> nivel_reject : Rechazar
+ap_list --> ap_create : Nuevo
+ap_list --> ap_edit : Editar
+ap_list --> ap_destroy : Eliminar
+ap_list --> ap_disable : Mantenimiento
+ap_disable --> ap_maintenance : Finalizar manto.
+comp_list --> comp_create : Nuevo
+comp_list --> comp_edit : Editar
+ses_list --> ses_create : Nueva
+ses_list --> ses_edit : Editar
+reports_dash --> reports_full : Ver completo
+reports_dash --> reports_pdf : Exportar PDF
+reports_dash --> reports_backup : Gestionar backup
+reports_backup --> reports_create : Crear backup
+reports_backup --> reports_download : Descargar
+profile_view --> profile_update : Editar
+
+' ============ FLECHAS - ENTRENADOR ============
+coach_dash --> coach_gym
+coach_dash --> coach_ses
+coach_dash --> coach_cal
+coach_dash --> coach_nivel
+coach_dash --> coach_profile
+coach_dash --> video_index
+
+coach_gym_list --> coach_gym_create : Nuevo
+coach_gym_list --> coach_gym_view : Ver
+coach_gym_view --> coach_gym_dash : Dashboard
+coach_ses_list --> coach_ses_create : Nueva
+coach_nivel_list --> coach_nivel_recom : Recomendar
+coach_nivel_list --> coach_nivel_aprove : Aprobar
+coach_nivel_list --> coach_nivel_reject : Rechazar
+
+' ============ FLECHAS - GIMNASTA ============
+gym_dash --> gym_prog
+gym_dash --> gym_ses
+gym_dash --> gym_cal
+gym_dash --> gym_coach
+gym_dash --> gym_nivel
+gym_dash --> gym_profile
+gym_dash --> video_index
+
+gym_ses_list --> gym_ses_create : Nueva
+gym_ses_list --> gym_ses_cancel : Cancelar
+gym_ses_list --> gym_ses_hist : Historial
+gym_nivel_list --> gym_nivel_create : Solicitar
+
+' ============ FLECHAS - MÉDICO ============
+doc_dash --> doc_pat
+doc_dash --> doc_les
+doc_dash --> doc_area
+doc_dash --> doc_a
+doc_dash --> doc_profile
+doc_dash --> video_index
+
+doc_pat_list --> doc_pat_view : Ver
+doc_pat_view --> doc_pat_hist : Historial
+doc_les_list --> doc_les_create : Nueva
+doc_les_list --> doc_les_edit : Editar
+doc_area_list --> doc_fisio
+doc_area_list --> doc_nutri
+doc_area_list --> doc_psico
+doc_psico --> doc_chatbot : Chatbot
+doc_a --> doc_aptitud
+doc_a --> doc_nutricional
+doc_a --> doc_respiratoria
+doc_a --> doc_psicologica
+doc_a --> doc_fisiologica
+
+' ============ FLECHAS - JUEZ ============
+judge_dash --> judge_eval
+judge_dash --> judge_profile
+judge_dash --> video_index
+
+judge_eval_view --> judge_score : Puntuar
+judge_eval_view --> judge_ded : Descontar
+
+' ============ FLECHAS - VIDEO ============
+video_index --> video_upload : Subir
+video_upload --> video_upload_post : POST
+video_upload_post --> video_pose : Procesar
+video_pose --> video_openai : Analizar
+video_index --> video_angle : Ángulos
+video_index --> video_stats : Estadísticas
+
+' ============ LEYENDA ============
+legend bottom
+  **Convenciones:**
+  Ruta GET /ruta\nControlador@método
+  [Auth Gate] = Middleware 'auth.custom' verifica sesión
+  Roles redirigen a dashboard específico al login
+  Cierre de sesión: POST /logout → login
+endlegend
+
+@enduml

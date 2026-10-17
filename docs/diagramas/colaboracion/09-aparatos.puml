@@ -1,0 +1,40 @@
+@startuml
+actor "Administrador" as admin
+participant "AparatoView" as view
+participant "AparatoController" as ctrl
+participant "AparatoRequest" as request
+participant "Aparato" as model
+participant "AuditService" as audit
+
+admin -> view: 1: Accede a gestión\nde aparatos
+view -> ctrl: 2: index()
+ctrl -> model: 3: all()
+ctrl <-- model: 4: Todos los aparatos
+ctrl -> ctrl: 5: Verifica estado\nmantenimiento c/u
+ctrl -> admin: 6: Lista con estados\n(Operativo/Mantenimiento/\nFuera de Servicio)
+
+admin -> view: 7: Crea nuevo aparato
+view -> ctrl: 8: store(data)
+ctrl -> request: 9: Validar nombre\núnico
+ctrl -> model: 10: create(['Nombre'=>$nom,\n'Descripcion'=>$desc,\n'EstadoMantenimiento'=>'Operativo'])
+ctrl -> audit: 11: log("Aparato creado")
+ctrl -> admin: 12: Aparato registrado
+
+admin -> view: 13: Inicia mantenimiento
+view -> ctrl: 14: desactivar($id)
+ctrl -> model: 15: update(['EstadoMantenimiento'=>\n'Fuera de Servicio'])
+ctrl -> audit: 16: log("Aparato en mantenimiento")
+ctrl -> admin: 17: Estado actualizado
+
+admin -> view: 18: Finaliza mantenimiento
+view -> ctrl: 19: finalizarMantenimiento($id)
+ctrl -> model: 20: update(['EstadoMantenimiento'=>'Operativo',\n'ProximoMantenimiento'=>$fecha])
+ctrl -> audit: 21: log("Mantenimiento\ncompletado")
+ctrl -> admin: 22: Aparato operativo\nde nuevo
+
+admin -> view: 23: Edita aparato
+view -> ctrl: 24: update($id, data)
+ctrl -> model: 25: save()
+ctrl -> audit: 26: log("Aparato actualizado")
+ctrl -> admin: 27: Cambios guardados
+@enduml

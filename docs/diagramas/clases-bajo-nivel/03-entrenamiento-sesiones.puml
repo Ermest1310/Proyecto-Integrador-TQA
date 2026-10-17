@@ -1,0 +1,171 @@
+@startuml
+skinparam classBorderColor #2C3E50
+skinparam arrowColor #2C3E50
+skinparam defaultFontName Segoe UI
+skinparam classFontSize 10
+
+package "Modelos" #D4E6F1 {
+  class SesionEntrenamiento {
+    {field} +ID_Sesion : int (PK) {auto_increment}
+    {field} +ID_Gimnasta : int (FK → usuarios.ID_Usuario)
+    {field} +ID_Entrenador : int (FK → usuarios.ID_Usuario)
+    {field} +ID_Aparato : int (FK → aparatos.ID_Aparato)
+    {field} +Fecha : date
+    {field} +Hora_Inicio : time
+    {field} +Hora_Fin : time
+    {field} +Duracion_Minutos : int {calculated on save}
+    {field} +Tipo_Asignacion : enum('Automatica','Manual')
+    {field} +Estado : enum('Programada','En_Curso','Completada','Cancelada')
+    {field} +Observaciones_Entrenador : text
+    {field} +Notas_Gimnasta : text
+    {field} +Asistio_Gimnasta : tinyint(1)
+    {field} +Hora_Llegada_Gimnasta : time
+    {field} +Hora_Salida_Gimnasta : time
+    {field} +Calificacion_Sesion : int(2) {1-10}
+    {field} +Comentarios_Finales : text
+    {field} +activo : tinyint(1)
+    {method} +gimnasta() : BelongsTo<Usuario>
+    {method} +entrenador() : BelongsTo<Usuario>
+    {method} +aparato() : BelongsTo<Aparato>
+    {method} +asignarEntrenadorAutomatico(fecha: date, hora: time, aparato: int) : int|null
+    {method} +entrenadoresDisponibles(fecha: date, hora: time, aparato: int) : Collection
+    {method} +scopeActivos(Builder) : Builder
+    {method} +scopeProgramadas(Builder) : Builder
+    {method} +scopeHoy(Builder) : Builder
+    {method} +scopeEntrenador(Builder, id: int) : Builder
+    {method} +boot() : void {calcula Duracion_Minutos al guardar}
+  }
+
+  class Entrenamiento {
+    {field} +ID_Entrenamiento : int (PK) {auto_increment}
+    {field} +ID_Gimnasta : int (FK → usuarios.ID_Usuario)
+    {field} +ID_Aparato : int (FK → aparatos.ID_Aparato)
+    {field} +Fecha : date
+    {field} +Duracion : int(3)
+    {field} +Observaciones : text
+    {field} +activo : tinyint(1)
+    {method} +usuario() : BelongsTo<Usuario>
+    {method} +gimnasta() : BelongsTo<Usuario>
+    {method} +aparato() : BelongsTo<Aparato>
+  }
+
+  class Aparato {
+    {field} +ID_Aparato : int (PK)
+    {field} +Nombre : string(50) {Suelo|Caballo con Arzones|Anillas|Salto|Barras Paralelas|Barra Fija}
+    {field} +Descripcion : text
+    {field} +UltimoMantenimiento : date
+    {field} +ProximoMantenimiento : date
+    {field} +EstadoMantenimiento : enum('Operativo','Mantenimiento','Fuera de Servicio')
+    {field} +activo : tinyint(1)
+    {method} +necesitaMantenimiento() : bool
+    {method} +estaOperativo() : bool
+    {method} +getEnMantenimientoAttribute() : bool
+  }
+
+  class Usuario {
+    {field} +ID_Usuario : int (PK)
+    {field} +Nombre : string(50)
+    {field} +Apellido : string(50)
+    {field} +Nivel : string(20)
+    {method} +sesionesComoGimnasta() : HasMany<SesionEntrenamiento>
+    {method} +sesionesComoEntrenador() : HasMany<SesionEntrenamiento>
+  }
+}
+
+package "Controladores" #F9E79F {
+  class SesionEntrenamientoController {
+    {method} +index(Request) : View
+    {method} +historial(Request) : View
+    {method} +create() : View
+    {method} +store(SesionEntrenamientoRequest) : RedirectResponse
+    {method} +edit(id: int) : View
+    {method} +update(Request, id: int) : RedirectResponse
+    {method} +destroy(id: int) : RedirectResponse
+    {method} +getEntrenadoresDisponibles(Request) : JsonResponse
+    {method} +validarDisponibilidad(Request) : JsonResponse
+  }
+
+  class EntrenadorController {
+    {method} +dashboard() : View
+    {method} +misGimnastas() : View
+    {method} +crearGimnasta() : View
+    {method} +guardarGimnasta(Request) : RedirectResponse
+    {method} +misSesiones() : View
+    {method} +verGimnasta(id: int) : View
+    {method} +dashboardGimnasta(id: int) : View
+    {method} +calendario() : View
+  }
+
+  class GimnastaController {
+    {method} +dashboard() : View
+    {method} +miProgreso() : View
+    {method} +misSesiones() : View
+    {method} +crearSesion() : View
+    {method} +guardarSesion(Request) : RedirectResponse
+    {method} +cancelarSesion(id: int) : RedirectResponse
+    {method} +calendario() : View
+  }
+
+  class EntrenamientoController {
+    {method} +index() : View
+    {method} +store(Request) : RedirectResponse
+    {method} +edit(id: int) : View
+    {method} +update(Request, id: int) : RedirectResponse
+    {method} +destroy(id: int) : RedirectResponse
+    {method} +getRelatedData() : JsonResponse
+  }
+}
+
+package "Form Requests" #E8DAEF {
+  class SesionEntrenamientoRequest {
+    {method} +rules() : array
+    {method} +messages() : array
+    {method} +withValidator(Validator) : void
+  }
+}
+
+package "Servicios" #D5F5E3 {
+  class AuditService {
+    {method} +log(evento, detalles) : void
+    {method} +created(model) : void
+    {method} +updated(model) : void
+  }
+}
+
+' ===== RELACIONES =====
+SesionEntrenamientoController ..> SesionEntrenamiento : CRUD
+SesionEntrenamientoController ..> Aparato : consulta
+SesionEntrenamientoController ..> Usuario : consulta entrenadores/gimnastas
+SesionEntrenamientoController ..> AuditService : <<registra>>
+
+EntrenadorController ..> Usuario : consulta
+EntrenadorController ..> SesionEntrenamiento : consulta
+GimnastaController ..> SesionEntrenamiento : consulta/crea/cancela
+GimnastaController ..> Usuario : consulta su entrenador
+EntrenamientoController ..> Entrenamiento : CRUD
+EntrenamientoController ..> Aparato : consulta
+
+SesionEntrenamientoRequest ..> SesionEntrenamientoController : <<valida>>
+
+SesionEntrenamiento "N" -- "1" Usuario : FK: ID_Gimnasta
+SesionEntrenamiento "N" -- "1" Usuario : FK: ID_Entrenador
+SesionEntrenamiento "N" -- "1" Aparato : FK: ID_Aparato
+Entrenamiento "N" -- "1" Usuario : FK: ID_Gimnasta
+Entrenamiento "N" -- "1" Aparato : FK: ID_Aparato
+
+legend bottom
+  **Algoritmo de Asignación Automática:**
+  SesionEntrenamiento::asignarEntrenadorAutomatico():
+  1. Obtener entrenadores activos con PermissionService
+  2. Filtrar disponibles (sin conflicto horario ese día/hora)
+  3. Seleccionar entrenador con menos sesiones asignadas
+  4. Si no hay disponibles → Tipo_Asignacion = 'Manual'
+
+  **Validación (SesionEntrenamientoRequest):**
+  - Horario laboral: 06:00 - 22:00
+  - Duración: 30-180 minutos
+  - Sin conflictos para gimnasta ni entrenador
+  - Gimnasta sin lesiones activas
+  - Aparato en estado Operativo
+endlegend
+@enduml

@@ -1,0 +1,49 @@
+@startuml
+actor "Médico" as doctor
+actor "Gimnasta" as gymnast
+participant "AnalisisView" as view
+participant "AnalisisMovimientoController" as ctrl
+participant "Gimnasta" as gimModel
+participant "AuditService" as audit
+
+== Evaluación de Aptitud Médica ==
+doctor -> view: 1: Inicia evaluación\nde aptitud
+view -> ctrl: 2: aptitudIndex()
+ctrl -> gimModel: 3: all()
+ctrl <-- gimModel: 4: Lista de gimnastas
+ctrl -> doctor: 5: Formulario de aptitud
+
+doctor -> view: 6: Registra aptitud\n(Apto, Restricciones,\nDiagnóstico)
+view -> ctrl: 7: aptitudStore(data)
+ctrl -> AptitudMedica: 8: create($data)
+ctrl -> audit: 9: log("Aptitud registrada")
+ctrl -> doctor: 10: Aptitud guardada
+
+== Evaluación Nutricional ==
+doctor -> view: 11: Evalúa nutrición
+view -> ctrl: 12: nutricionalStore(data)
+ctrl -> EvalNutricional: 13: create([Peso,Altura,IMC,\n%Grasa,MasaMuscular,\nHidratación,Recomendaciones])
+ctrl -> audit: 14: log("Eval. nutricional")
+ctrl -> doctor: 15: Evaluación guardada
+
+== Evaluación Respiratoria ==
+doctor -> view: 16: Evalúa respiración
+view -> ctrl: 17: respiratoriaStore(data)
+ctrl -> EvalRespiratoria: 18: create([CapacidadPulmonar,\nSaturacionOxigeno,\nDiagnosticoRespiratorio])
+ctrl -> audit: 19: log("Eval. respiratoria")
+ctrl -> doctor: 20: Evaluación guardada
+
+== Evaluación Psicológica ==
+doctor -> view: 21: Evalúa psicología
+view -> ctrl: 22: psicologicaStore(data)
+ctrl -> EvalPsicologica: 23: create([NivelAnsiedad,\nNivelEstres, Motivacion,\nCalidadSueno,\nConcentracion])
+ctrl -> audit: 24: log("Eval. psicológica")
+ctrl -> doctor: 25: Evaluación guardada
+
+== Evaluación Fisiológica ==
+doctor -> view: 26: Evalúa fisiología
+view -> ctrl: 27: fisiologicaStore(data)
+ctrl -> EvalFisiologica: 28: create([FCReposo,\nFCEsfuerzo, Presion,\nSaturacionOxigeno])
+ctrl -> audit: 29: log("Eval. fisiológica")
+ctrl -> doctor: 30: Evaluación guardada
+@enduml

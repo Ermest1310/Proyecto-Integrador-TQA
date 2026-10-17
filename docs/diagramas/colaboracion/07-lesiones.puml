@@ -1,0 +1,43 @@
+@startuml
+actor "Médico" as doctor
+actor "Gimnasta" as gymnast
+participant "LesionView" as view
+participant "LesionController" as ctrl
+participant "LesionRequest" as request
+participant "Lesion" as model
+participant "Usuario" as user
+participant "AuditService" as audit
+
+gymnast -> doctor: 1: Reporta lesión\ndurante evaluación
+doctor -> view: 2: Accede a crear\nlesión
+view -> ctrl: 3: create()
+ctrl -> user: 4: scopeGimnastas()->get()
+ctrl <-- user: 5: Lista de gimnastas\nactivos
+ctrl -> doctor: 6: Formulario con\ngimnastas y tipos
+
+doctor -> view: 7: Registra lesión\n(Tipo, Parte, Gravedad,\nTratamiento)
+view -> ctrl: 8: store(data)
+ctrl -> request: 9: Validar datos
+ctrl -> model: 10: create(['ID_Gimnasta'=>$g,\n'ID_Medico'=>$doc,\n'Tipo'=>$tipo,\n'ParteCuerpo'=>$parte,\n'Gravedad'=>$grav,\n'Estado'=>'Lesionado',\n'Tratamiento'=>$trat,\n'TiempoRecuperacion'=>$t])
+ctrl <-- model: 11: Lesión registrada
+ctrl -> audit: 12: log("Lesión creada")
+ctrl -> doctor: 13: Lesión registrada
+
+doctor -> view: 14: Actualiza estado\nde lesión
+view -> ctrl: 15: edit($id)
+ctrl -> model: 16: find($id)
+ctrl <-- model: 17: Datos de la lesión
+ctrl -> doctor: 18: Formulario de\nedición
+
+doctor -> view: 19: Cambia estado a\n"En Rehabilitación"\ny actualiza tratamiento
+view -> ctrl: 20: update($id, data)
+ctrl -> model: 21: save()
+ctrl -> audit: 22: log("Lesión actualizada")
+ctrl -> doctor: 23: Lesión actualizada
+
+doctor -> view: 24: Marca como\n"Recuperada"
+view -> ctrl: 25: update($id, ['Estado'=>'Recuperada',\n'FechaRecuperacion'=>now()])
+ctrl -> model: 26: save()
+ctrl -> audit: 27: log("Lesión recuperada")
+ctrl -> doctor: 28: Lesión cerrada
+@enduml

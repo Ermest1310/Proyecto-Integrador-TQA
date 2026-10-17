@@ -1,0 +1,451 @@
+@startuml
+skinparam table {
+  BorderColor #2C3E50
+  BackgroundColor #FEFEFE
+  FontSize 10
+}
+skinparam arrowColor #2C3E50
+skinparam defaultFontName Segoe UI
+skinparam packageBorderColor #2C3E50
+
+title "Modelo Relacional - Gimnasia Unificada"
+
+' ===== CORE =====
+package "Core" #D4E6F1 {
+  table roles {
+    <color:#1A5276><b>ID_Rol</b></color> int (PK)
+    NombreRol varchar(50) {Entrenador|Gimnasta|Administrador|Medico|Postulacion|Juez}
+    activo tinyint(1)
+  }
+
+  table usuarios {
+    <color:#1A5276><b>ID_Usuario</b></color> int (PK)
+    NombreUsuario varchar(50)
+    Contrasena varchar(255)
+    Email varchar(100)
+    CedulaIdentidad varchar(20)
+    Nombre varchar(50)
+    Apellido varchar(50)
+    FechaNacimiento date
+    Nacionalidad varchar(50)
+    Peso decimal(5,2)
+    Altura decimal(5,2)
+    Nivel varchar(20)
+    <color:#1A5276><b>ID_Rol</b></color> int (FK)
+    FotoPerfil varchar(255)
+    Contacto varchar(100)
+    activo tinyint(1)
+  }
+
+  table gimnastas {
+    <color:#1A5276><b>ID_Gimnasta</b></color> int (PK)
+    <color:#1A5276>ID_Usuario</color> int (FK)
+    <color:#1A5276>ID_Entrenador</color> int (FK)
+    <color:#1A5276>ID_Rol</color> int (FK)
+    Nombre varchar(50)
+    Apellido varchar(50)
+    FechaNacimiento date
+    Nacionalidad varchar(50)
+    Peso decimal(5,2)
+    Altura decimal(5,2)
+    Nivel varchar(20)
+    activo tinyint(1)
+  }
+}
+
+' ===== APARATOS Y ELEMENTOS =====
+package "Aparatos y Elementos" #F9E79F {
+  table aparatos {
+    <color:#1A5276><b>ID_Aparato</b></color> int (PK)
+    Nombre varchar(50) {Suelo|Caballo|Anillas|Salto|Paralelas|Fija}
+    Descripcion text
+    UltimoMantenimiento date
+    ProximoMantenimiento date
+    EstadoMantenimiento enum('Operativo','Mantenimiento','Fuera de Servicio')
+    activo tinyint(1)
+  }
+
+  table grupos_elementos {
+    <color:#1A5276><b>ID_Grupo</b></color> int (PK)
+    <color:#1A5276>ID_Aparato</color> int (FK)
+    Nombre varchar(100)
+    NumeroGrupo int
+  }
+
+  table elementos_detallados {
+    <color:#1A5276><b>ID_Elemento</b></color> int (PK)
+    <color:#1A5276>ID_Grupo</color> int (FK)
+    Nombre varchar(100)
+    Descripcion text
+    Dificultad varchar(5) {A|B|C|D|E|F|G|H}
+    NotaBase decimal(4,2)
+  }
+
+  table requisitos_composicion {
+    <color:#1A5276><b>ID_Requisito</b></color> int (PK)
+    <color:#1A5276>ID_Aparato</color> int (FK)
+    Descripcion text
+    Obligatorio tinyint(1)
+    Valor decimal(4,2)
+  }
+
+  table deducciones_ejecucion {
+    <color:#1A5276><b>ID_Deduccion</b></color> int (PK)
+    <color:#1A5276>ID_Aparato</color> int (FK)
+    Tipo varchar(100)
+    Descripcion text
+    Valor_Deduccion decimal(4,2)
+    Criterios text
+  }
+}
+
+' ===== RUTINAS =====
+package "Rutinas" #D5F5E3 {
+  table rutinas {
+    <color:#1A5276><b>ID_Rutina</b></color> int (PK)
+    <color:#1A5276>ID_Gimnasta</color> int (FK)
+    <color:#1A5276>ID_Aparato</color> int (FK)
+    Fecha date
+    Descripcion text
+  }
+
+  table elementos_rutina {
+    <color:#1A5276><b>ID_Rutina</b></color> int (PK)(FK)
+    <color:#1A5276><b>ID_Elemento</b></color> int (PK)(FK)
+    <color:#1A5276><b>Orden</b></color> int (PK)
+  }
+}
+
+' ===== ENTRENAMIENTO =====
+package "Entrenamiento" #E8DAEF {
+  table sesiones_entrenamiento {
+    <color:#1A5276><b>ID_Sesion</b></color> int (PK)
+    <color:#1A5276>ID_Gimnasta</color> int (FK)
+    <color:#1A5276>ID_Entrenador</color> int (FK)
+    <color:#1A5276>ID_Aparato</color> int (FK)
+    Fecha date
+    Hora_Inicio time
+    Hora_Fin time
+    Duracion_Minutos int
+    Tipo_Asignacion enum('Automatica','Manual')
+    Estado enum('Programada','En_Curso','Completada','Cancelada')
+    Observaciones_Entrenador text
+    Notas_Gimnasta text
+    Asistio_Gimnasta tinyint(1)
+    Hora_Llegada_Gimnasta time
+    Hora_Salida_Gimnasta time
+    Calificacion_Sesion int(2)
+    Comentarios_Finales text
+    activo tinyint(1)
+  }
+
+  table entrenamientos {
+    <color:#1A5276><b>ID_Entrenamiento</b></color> int (PK)
+    <color:#1A5276>ID_Gimnasta</color> int (FK)
+    <color:#1A5276>ID_Aparato</color> int (FK)
+    Fecha date
+    Duracion int(3)
+    Observaciones text
+    activo tinyint(1)
+  }
+}
+
+' ===== COMPETENCIAS =====
+package "Competencias" #FCF3CF {
+  table competencias {
+    <color:#1A5276><b>ID_Competencia</b></color> int (PK)
+    NombreCompetencia varchar(100)
+    Fecha date
+    Ubicacion varchar(150)
+    Descripcion text
+    activo tinyint(1)
+  }
+
+  table competencia_gimnastas {
+    <color:#1A5276><b>ID_Competencia</b></color> int (PK)(FK)
+    <color:#1A5276><b>ID_Gimnasta</b></color> int (PK)(FK)
+  }
+}
+
+' ===== JUECES =====
+package "Jueces" #FADBD8 {
+  table evaluaciones_juez {
+    <color:#1A5276><b>ID_EvaluacionJuez</b></color> int (PK)
+    <color:#1A5276>ID_Gimnasta</color> int (FK)
+    <color:#1A5276>ID_Competencia</color> int (FK)
+    <color:#1A5276>ID_Aparato</color> int (FK)
+    <color:#1A5276>ID_Usuario</color> int (FK) {juez}
+    video_ruta varchar(255)
+    nota_final decimal(5,2)
+    nota_dificultad decimal(5,2)
+    nota_ejecucion decimal(5,2)
+    observaciones text
+    estado enum('pendiente','en_revision','confirmado')
+    fecha_evaluacion datetime
+  }
+
+  table descuentos_juez {
+    <color:#1A5276><b>ID_Descuento</b></color> int (PK)
+    <color:#1A5276>ID_EvaluacionJuez</color> int (FK)
+    <color:#1A5276>ID_Elemento</color> int (FK)
+    nombre_elemento varchar(100)
+    tipo_error enum('caida','paso','perdida_equilibrio','separacion_linea','falta_tecnica','otro')
+    descripcion_error text
+    descuento_ia_propuesto decimal(4,2)
+    descuento_final decimal(4,2)
+    angulo_detectado decimal(6,2)
+    coordenadas_json json
+    justificacion text
+  }
+
+  table videos_evaluacion {
+    <color:#1A5276><b>ID_EvaluacionJuez</b></color> int (FK)
+    nombre_original varchar(255)
+    nombre_archivo varchar(255)
+    ruta_archivo varchar(255)
+    tamano_bytes bigint
+    duracion_segundos int
+    analizado_mediapipe tinyint(1)
+    resultado_analisis_json json
+    fecha_subido datetime
+  }
+
+  table evaluaciones {
+    <color:#1A5276><b>ID_Evaluacion</b></color> int (PK)
+    <color:#1A5276>ID_Gimnasta</color> int (FK)
+    <color:#1A5276>ID_Aparato</color> int (FK)
+    Fecha datetime
+    NotaFinal decimal(5,2)
+  }
+}
+
+' ===== MÉDICO =====
+package "Médico" #E8DAEF {
+  table area_medica {
+    <color:#1A5276><b>ID_AreaMedica</b></color> int (PK)
+    <color:#1A5276>ID_Usuario</color> int (FK)
+    Nombre varchar(100)
+    Especialista varchar(100)
+    TipoConsulta varchar(100)
+    Descripcion text
+  }
+
+  table lesiones {
+    <color:#1A5276><b>ID_Lesion</b></color> int (PK)
+    <color:#1A5276>ID_Gimnasta</color> int (FK)
+    <color:#1A5276>ID_Medico</color> int (FK)
+    Tipo varchar(100)
+    ParteCuerpo varchar(50)
+    ParteEspecifica varchar(100)
+    FechaLesion date
+    FechaDiagnostico date
+    FechaRecuperacion date
+    Estado enum('Lesionado','En Rehabilitacion','Recuperada')
+    Gravedad enum('Leve','Moderada','Grave')
+    Tratamiento text
+    TiempoRecuperacion int
+    Observaciones text
+    activo tinyint(1)
+  }
+
+  table condiciones_medicas {
+    <color:#1A5276><b>ID_Condicion</b></color> int (PK)
+    <color:#1A5276>ID_Gimnasta</color> int (FK)
+    Nombre varchar(100)
+    Descripcion text
+  }
+
+  table aptitud_medica {
+    <color:#1A5276><b>ID_Aptitud</b></color> int (PK)
+    <color:#1A5276>ID_Gimnasta</color> int (FK)
+    FechaCertificacion datetime
+    AptoParaEntrenar tinyint(1)
+    RestriccionesMedicas text
+    Diagnostico text
+    MedicoResponsable varchar(100)
+    Observaciones text
+  }
+
+  table evaluaciones_nutricionales {
+    <color:#1A5276><b>ID_Gimnasta</b></color> int (FK)
+    FechaEvaluacion datetime
+    Peso decimal(5,2)
+    Altura decimal(5,2)
+    IMC decimal(4,1)
+    PorcentajeGrasa decimal(4,1)
+    MasaMuscular decimal(4,1)
+    NivelHidratacion varchar(50)
+    SeguimientoDieta text
+    Recomendaciones text
+    Observaciones text
+  }
+
+  table evaluaciones_psicologicas {
+    <color:#1A5276><b>ID_Gimnasta</b></color> int (FK)
+    FechaEvaluacion datetime
+    NivelAnsiedad int {0-10}
+    NivelEstres int {0-10}
+    NivelMotivacion int {0-10}
+    CalidadSueno int {0-10}
+    Concentracion int {0-10}
+    Observaciones text
+    Recomendaciones text
+  }
+
+  table evaluaciones_fisiologicas {
+    <color:#1A5276><b>ID_Gimnasta</b></color> int (FK)
+    FechaEvaluacion datetime
+    FCReposo int
+    FCEsfuerzo int
+    PresionSistolica int
+    PresionDiastolica int
+    SaturacionOxigeno decimal(4,1)
+    Observaciones text
+  }
+
+  table evaluaciones_respiratorias {
+    <color:#1A5276><b>ID_Gimnasta</b></color> int (FK)
+    FechaEvaluacion datetime
+    CapacidadPulmonar decimal(5,2)
+    SaturacionOxigeno decimal(4,1)
+    DiagnosticoRespiratorio text
+    Observaciones text
+  }
+}
+
+' ===== VIDEOS =====
+package "Video y Análisis" #F2F3F4 {
+  table videos {
+    <color:#1A5276><b>ID_Video</b></color> int (PK)
+    <color:#1A5276>ID_Usuario</color> int (FK)
+    NombreArchivo varchar(255)
+    NombreOriginal varchar(255)
+    Tipo varchar(50)
+    Tamano int
+    Descripcion text
+  }
+
+  table pose_resultados {
+    <color:#1A5276>ID_Video</color> int (FK)
+    FrameNum int
+    Landmarks json {33 landmarks}
+    AngulosCalculados json
+  }
+}
+
+' ===== POSTULACIONES =====
+package "Postulaciones y Niveles" #D5F5E3 {
+  table postulaciones {
+    <color:#1A5276><b>ID_Postulacion</b></color> int (PK)
+    Email varchar(100)
+    Nombre varchar(50)
+    Apellido varchar(50)
+    FechaNacimiento date
+    Nacionalidad varchar(50)
+    CedulaIdentidad varchar(20)
+    Peso decimal(5,2)
+    Altura decimal(5,2)
+    IMC decimal(4,1)
+    Edad int
+    Nivel varchar(20)
+    estado enum('pendiente','aprobada','rechazada')
+    recomendaciones_sistema text
+    comentarios text
+    fecha_postulacion datetime
+    fecha_revision datetime
+    <color:#1A5276>revisado_por</color> int (FK)
+  }
+
+  table solicitudes_nivel {
+    <color:#1A5276><b>ID_Solicitud</b></color> int (PK)
+    <color:#1A5276>ID_Gimnasta</color> int (FK)
+    nivel_actual varchar(20)
+    nivel_solicitado varchar(20)
+    tipo enum('evaluacion','recomendacion')
+    <color:#1A5276>ID_Entrenador</color> int (FK)
+    estado enum('pendiente','aprobada','rechazada')
+    comentarios_gimnasta text
+    comentarios_entrenador text
+    comentarios_admin text
+    fecha_solicitud datetime
+    fecha_respuesta datetime
+    <color:#1A5276>aprobado_por</color> int (FK)
+  }
+}
+
+' ===== RELACIONES =====
+' Core
+roles ||--o{ usuarios : ID_Rol
+usuarios ||--o{ gimnastas : ID_Usuario
+
+' Aparatos
+aparatos ||--o{ grupos_elementos : ID_Aparato
+grupos_elementos ||--o{ elementos_detallados : ID_Grupo
+aparatos ||--o{ requisitos_composicion : ID_Aparato
+aparatos ||--o{ deducciones_ejecucion : ID_Aparato
+
+' Rutinas
+gimnastas ||--o{ rutinas : ID_Gimnasta
+aparatos ||--o{ rutinas : ID_Aparato
+rutinas ||--o{ elementos_rutina : ID_Rutina
+elementos_detallados ||--o{ elementos_rutina : ID_Elemento
+
+' Entrenamiento
+usuarios ||--o{ sesiones_entrenamiento : "ID_Gimnasta"
+usuarios ||--o{ sesiones_entrenamiento : "ID_Entrenador"
+aparatos ||--o{ sesiones_entrenamiento : ID_Aparato
+usuarios ||--o{ entrenamientos : ID_Gimnasta
+aparatos ||--o{ entrenamientos : ID_Aparato
+
+' Competencias
+competencias ||--o{ competencia_gimnastas : ID_Competencia
+gimnastas ||--o{ competencia_gimnastas : ID_Gimnasta
+
+' Jueces
+usuarios ||--o{ evaluaciones_juez : "ID_Gimnasta"
+usuarios ||--o{ evaluaciones_juez : "ID_Usuario (juez)"
+competencias ||--o{ evaluaciones_juez : ID_Competencia
+aparatos ||--o{ evaluaciones_juez : ID_Aparato
+evaluaciones_juez ||--o{ descuentos_juez : ID_EvaluacionJuez
+elementos_detallados ||--o{ descuentos_juez : ID_Elemento
+evaluaciones_juez ||--o{ videos_evaluacion : ID_EvaluacionJuez
+
+' Médico
+usuarios ||--o{ lesiones : "ID_Gimnasta"
+usuarios ||--o{ lesiones : "ID_Medico"
+gimnastas ||--o{ aptitud_medica : ID_Gimnasta
+gimnastas ||--o{ evaluaciones_nutricionales : ID_Gimnasta
+gimnastas ||--o{ evaluaciones_psicologicas : ID_Gimnasta
+gimnastas ||--o{ evaluaciones_fisiologicas : ID_Gimnasta
+gimnastas ||--o{ evaluaciones_respiratorias : ID_Gimnasta
+usuarios ||--o{ condiciones_medicas : ID_Gimnasta
+
+' Videos
+usuarios ||--o{ videos : ID_Usuario
+videos ||--o{ pose_resultados : ID_Video
+
+' Postulaciones y Niveles
+usuarios ||--o{ postulaciones : revisado_por
+usuarios ||--o{ solicitudes_nivel : "ID_Gimnasta"
+usuarios ||--o{ solicitudes_nivel : "ID_Entrenador"
+usuarios ||--o{ solicitudes_nivel : "aprobado_por"
+
+' Área médica
+usuarios ||--o{ area_medica : ID_Usuario
+
+' FK faltantes en gimnastas
+usuarios ||--o{ gimnastas : ID_Entrenador
+
+legend bottom
+  <b>Convenciones:</b>
+  <color:#1A5276><b>Primary Key (PK)</b></color>
+  <color:#1A5276>Foreign Key (FK)</color>
+  <b>Tabla Compuesta:</b> PK compuesta (PK)(FK)
+  ||--o{ : 1 a N (opcional)
+  ||--|| : 1 a 1 (obligatorio)
+
+  <b>Motor:</b> MySQL 8.0.30 | <b>Engine:</b> InnoDB
+  <b>Charset:</b> utf8mb4_unicode_ci
+endlegend
+
+@enduml

@@ -1,0 +1,37 @@
+@startuml
+actor "Aspirante" as applicant
+participant "PostulacionView" as view
+participant "PostulacionController" as ctrl
+participant "Postulacion" as model
+participant "SanitizationService" as sanitizer
+participant "AuditService" as audit
+actor "Admin" as admin
+participant "UsuarioUnificadoController" as userCtrl
+participant "Usuario" as userModel
+
+applicant -> view: 1: Completa formulario\nde postulación
+view -> ctrl: 2: store(request)
+ctrl -> sanitizer: 3: sanitize($data)
+ctrl <-- sanitizer: 4: Datos sanitizados
+ctrl -> model: 5: create($data)
+ctrl <-- model: 6: Postulacion creada\n(estado=pendiente)
+ctrl -> audit: 7: log("Postulación creada")
+ctrl -> applicant: 8: Confirmación\nal aspirante
+
+admin -> view: 9: Revisa postulaciones\npendientes
+view -> ctrl: 10: index()
+ctrl -> model: 11: where('estado','pendiente')
+ctrl <-- model: 12: Lista postulaciones
+ctrl -> admin: 13: Muestra postulaciones
+
+admin -> view: 14: Aprueba postulación\n(ID_Postulacion)
+view -> ctrl: 15: aprobar($id)
+ctrl -> model: 16: find($id)
+ctrl <-- model: 17: Postulacion data
+ctrl -> model: 18: update(['estado'=>'aprobada'])
+ctrl -> userCtrl: 19: Crear usuario desde\npostulación
+userCtrl -> userModel: 20: create($data_gimnasta)
+userCtrl <-- userModel: 21: Nuevo Usuario (rol=Gimnasta)
+ctrl -> audit: 22: log("Postulación aprobada,\nusuario creado")
+ctrl -> admin: 23: Confirmación de aprobación
+@enduml

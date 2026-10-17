@@ -1,0 +1,46 @@
+@startuml
+actor "Juez" as judge
+participant "EvaluacionView" as view
+participant "JuezController" as ctrl
+participant "EvaluacionesJuez" as evalModel
+participant "VideoAnalysisController" as vaCtrl
+participant "OpenAI" as ai
+participant "DescuentosJuez" as descModel
+participant "DeduccionEjecucion" as dedModel
+participant "AuditService" as audit
+
+judge -> view: 1: Crea evaluación
+view -> ctrl: 2: createEvaluation()
+ctrl -> evalModel: 3: Obtiene gimnastas\npendientes
+ctrl <-- evalModel: 4: Lista de gimnastas\nsin evaluar
+ctrl -> judge: 5: Formulario de\nevaluación
+
+judge -> view: 6: Sube video y\nselecciona gimnasta
+view -> ctrl: 7: storeEvaluation(data)
+ctrl -> evalModel: 8: create($data)
+ctrl -> judge: 9: Evaluación creada\n(estado=pendiente)
+
+judge -> view: 10: Inicia evaluación
+view -> ctrl: 11: evaluar($id)
+ctrl -> evalModel: 12: find($id)
+ctrl <-- evalModel: 13: Datos + video_ruta
+ctrl -> vaCtrl: 14: analyzeWithAI($video)
+vaCtrl -> ai: 15: Envía frames +\nreglas FIG
+vaCtrl <-- ai: 16: Nota dificultad y\ndescuentos sugeridos
+ctrl -> judge: 17: Video + análisis\nIA mostrados
+
+judge -> view: 18: Asigna puntuaciones
+view -> ctrl: 19: storeScore(id, nota_d,\nnota_e, observaciones)
+ctrl -> evalModel: 20: update(['nota_dificultad'=>X,\n'nota_ejecucion'=>Y,\n'nota_final'=>X+Y])
+ctrl -> audit: 21: log("Score registrado")
+ctrl -> judge: 22: Score guardado
+
+judge -> view: 23: Agrega descuento
+view -> ctrl: 24: storeDeduction(evalId, data)
+ctrl -> dedModel: 25: where('ID_Aparato',$ap)\n->get()
+ctrl <-- dedModel: 26: Deducciones FIG\npor aparato
+ctrl -> descModel: 27: create(['ID_EvaluacionJuez'=>$id,\n'ID_Elemento'=>$el,\n'tipo_error'=>$tipo,\n'descuento_final'=>$val])
+ctrl -> evalModel: 28: Recalcula nota_final
+ctrl -> audit: 29: log("Deducción aplicada")
+ctrl -> judge: 30: Deducción registrada
+@enduml

@@ -1,0 +1,170 @@
+@startuml
+skinparam classBorderColor #2C3E50
+skinparam arrowColor #2C3E50
+skinparam defaultFontName Segoe UI
+skinparam classFontSize 10
+
+package "Modelos" #D4E6F1 {
+  class EvaluacionesJuez {
+    {field} +ID_EvaluacionJuez : int (PK) {auto_increment}
+    {field} +ID_Gimnasta : int (FK → usuarios.ID_Usuario)
+    {field} +ID_Competencia : int (FK → competencias.ID_Competencia)
+    {field} +ID_Aparato : int (FK → aparatos.ID_Aparato)
+    {field} +ID_Usuario : int (FK → usuarios.ID_Usuario) {juez}
+    {field} +video_ruta : string(255)
+    {field} +nota_final : decimal(5,2)
+    {field} +nota_dificultad : decimal(5,2)
+    {field} +nota_ejecucion : decimal(5,2)
+    {field} +observaciones : text
+    {field} +estado : enum('pendiente','en_revision','confirmado')
+    {field} +fecha_evaluacion : datetime
+    {method} +gimnasta() : BelongsTo<Usuario>
+    {method} +competencia() : BelongsTo<Competencia>
+    {method} +aparato() : BelongsTo<Aparato>
+    {method} +juez() : BelongsTo<Usuario>
+    {method} +descuentos() : HasMany<DescuentosJuez>
+    {method} +videos() : HasMany<VideosEvaluacion>
+  }
+
+  class DescuentosJuez {
+    {field} +ID_Descuento : int (PK) {auto_increment}
+    {field} +ID_EvaluacionJuez : int (FK → evaluaciones_juez.ID_EvaluacionJuez)
+    {field} +ID_Elemento : int (FK → elementos_detallados.ID_Elemento)
+    {field} +nombre_elemento : string(100)
+    {field} +tipo_error : enum('caida','paso','perdida_equilibrio','separacion_linea','falta_tecnica','otro')
+    {field} +descripcion_error : text
+    {field} +descuento_ia_propuesto : decimal(4,2)
+    {field} +descuento_final : decimal(4,2)
+    {field} +angulo_detectado : decimal(6,2)
+    {field} +coordenadas_json : json
+    {field} +justificacion : text
+    {method} +evaluacion() : BelongsTo<EvaluacionesJuez>
+  }
+
+  class DeduccionEjecucion {
+    {field} +ID_Deduccion : int (PK) {auto_increment}
+    {field} +ID_Aparato : int (FK → aparatos.ID_Aparato)
+    {field} +Tipo : string(100)
+    {field} +Descripcion : text
+    {field} +Valor_Deduccion : decimal(4,2)
+    {field} +Criterios : text
+    {method} +aparato() : BelongsTo<Aparato>
+  }
+
+  class VideosEvaluacion {
+    {field} +ID_EvaluacionJuez : int (FK → evaluaciones_juez.ID_EvaluacionJuez)
+    {field} +nombre_original : string(255)
+    {field} +nombre_archivo : string(255)
+    {field} +ruta_archivo : string(255)
+    {field} +tamano_bytes : bigint
+    {field} +duracion_segundos : int
+    {field} +analizado_mediapipe : tinyint(1)
+    {field} +resultado_analisis_json : json
+    {field} +fecha_subido : datetime
+    {method} +evaluacion() : BelongsTo<EvaluacionesJuez>
+  }
+
+  class Competencia {
+    {field} +ID_Competencia : int (PK)
+    {field} +NombreCompetencia : string(100)
+    {field} +Fecha : date
+    {field} +Ubicacion : string(150)
+    {field} +Descripcion : text
+    {field} +activo : tinyint(1)
+  }
+
+  class Aparato {
+    {field} +ID_Aparato : int (PK)
+    {field} +Nombre : string(50)
+  }
+
+  class ElementoDetallado {
+    {field} +ID_Elemento : int (PK)
+    {field} +ID_Grupo : int (FK)
+    {field} +Nombre : string(100)
+    {field} +Dificultad : string(5) {A|B|C|D|E|F|G|H}
+  }
+
+  class GrupoElemento {
+    {field} +ID_Grupo : int (PK)
+    {field} +ID_Aparato : int (FK)
+    {field} +Nombre : string(100)
+    {field} +NumeroGrupo : int
+  }
+}
+
+package "Controladores" #F9E79F {
+  class JuezController {
+    {method} +dashboard() : View
+    {method} +createEvaluation() : View
+    {method} +storeEvaluation(Request) : RedirectResponse
+    {method} +evaluar(id: int) : View
+    {method} +storeScore(id: int, Request) : JsonResponse
+    {method} +storeDeduction(id: int, Request) : JsonResponse
+    {method} +deleteDeduction(evalId: int, dedId: int) : JsonResponse
+    {method} +getLandmarks(id: int) : JsonResponse
+    {method} +getPendingGymnasts() : JsonResponse
+  }
+
+  class VideoAnalysisController {
+    {method} +analyzeWithAI(Request) : JsonResponse
+  }
+}
+
+package "Servicios" #D5F5E3 {
+  class FileUploadService {
+    {field} -maxSize : int = 5242880 {5MB}
+    {field} -allowedExtensions : array = ['mp4','avi','mov','mkv']
+    {field} -allowedMimes : array = ['video/mp4','video/avi','video/quicktime']
+    {method} +uploadSecure(file: UploadedFile, path: string) : string
+    {method} +deleteFile(path: string) : bool
+    {method} -sanitizeFilename(name: string) : string
+    {method} -validateFile(file: UploadedFile) : bool
+  }
+
+  class AuditService {
+    {method} +log(evento, detalles) : void
+    {method} +created(model) : void
+    {method} +updated(model) : void
+    {method} +deleted(model) : void
+  }
+}
+
+' ===== RELACIONES =====
+JuezController ..> EvaluacionesJuez : CRUD
+JuezController ..> DescuentosJuez : <<gestiona>>
+JuezController ..> DeduccionEjecucion : consulta reglas FIG
+JuezController ..> VideosEvaluacion : consulta
+JuezController ..> Competencia : consulta
+JuezController ..> Aparato : consulta
+JuezController ..> VideoAnalysisController : <<obtiene landmarks>>
+JuezController ..> FileUploadService : <<sube video>>
+JuezController ..> AuditService : <<registra>>
+
+EvaluacionesJuez "1" -- "*" DescuentosJuez : FK: ID_EvaluacionJuez
+EvaluacionesJuez "1" -- "*" VideosEvaluacion : FK: ID_EvaluacionJuez
+EvaluacionesJuez "*" -- "1" Competencia : FK: ID_Competencia
+EvaluacionesJuez "*" -- "1" Aparato : FK: ID_Aparato
+EvaluacionesJuez "*" -- "1" Usuario <<juez>> : FK: ID_Usuario
+EvaluacionesJuez "*" -- "1" Usuario <<gimnasta>> : FK: ID_Gimnasta
+
+DeduccionEjecucion "*" -- "1" Aparato : FK: ID_Aparato
+
+ElementoDetallado "*" -- "1" GrupoElemento : FK: ID_Grupo
+GrupoElemento "*" -- "1" Aparato : FK: ID_Aparato
+
+legend bottom
+  **Sistema de Puntaje FIG:**
+  nota_final = nota_dificultad + nota_ejecucion - descuentos
+
+  **Flujo de Evaluación:**
+  1. Juez crea evaluación (selecciona gimnasta, competencia, aparato)
+  2. Sube video → FileUploadService
+  3. VideoAnalysisController analiza con MediaPipe + OpenAI
+  4. Juez asigna nota_dificultad y nota_ejecucion
+  5. Juez agrega descuentos desde catálogo DeduccionEjecucion
+  6. Cada descuento se resta de la nota final
+  7. DescuentosJuez.angulo_detectado viene de MediaPipe
+  8. Estado final: confirmado
+endlegend
+@enduml

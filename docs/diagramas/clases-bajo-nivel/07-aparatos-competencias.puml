@@ -1,0 +1,162 @@
+@startuml
+skinparam classBorderColor #2C3E50
+skinparam arrowColor #2C3E50
+skinparam defaultFontName Segoe UI
+skinparam classFontSize 10
+
+package "Modelos" #D4E6F1 {
+  class Aparato {
+    {field} +ID_Aparato : int (PK) {auto_increment}
+    {field} +Nombre : string(50) {unique}
+    {field} +Descripcion : text
+    {field} +UltimoMantenimiento : date
+    {field} +ProximoMantenimiento : date
+    {field} +EstadoMantenimiento : enum('Operativo','Mantenimiento','Fuera de Servicio')
+    {field} +activo : tinyint(1)
+    {field} +UltimoMantenimiento : date
+    {field} +ProximoMantenimiento : date
+    {method} +necesitaMantenimiento() : bool
+    {method} +estaOperativo() : bool
+    {method} +getEnMantenimientoAttribute() : bool
+    {method} +sesiones() : HasMany<SesionEntrenamiento>
+    {method} +entrenamientos() : HasMany<Entrenamiento>
+    {method} +evaluacionesJuez() : HasMany<EvaluacionesJuez>
+    {method} +deducciones() : HasMany<DeduccionEjecucion>
+  }
+
+  class SesionEntrenamiento {
+    {field} +ID_Sesion : int (PK)
+    {field} +ID_Aparato : int (FK)
+    {field} +Fecha : date
+    {field} +Estado : enum
+  }
+
+  class Entrenamiento {
+    {field} +ID_Entrenamiento : int (PK)
+    {field} +ID_Aparato : int (FK)
+    {field} +Fecha : date
+  }
+
+  class EvaluacionesJuez {
+    {field} +ID_EvaluacionJuez : int (PK)
+    {field} +ID_Aparato : int (FK)
+  }
+
+  class DeduccionEjecucion {
+    {field} +ID_Deduccion : int (PK) {auto_increment}
+    {field} +ID_Aparato : int (FK)
+    {field} +Tipo : string(100)
+    {field} +Descripcion : text
+    {field} +Valor_Deduccion : decimal(4,2)
+    {field} +Criterios : text
+    {method} +aparato() : BelongsTo<Aparato>
+  }
+
+  class GrupoElemento {
+    {field} +ID_Grupo : int (PK)
+    {field} +ID_Aparato : int (FK)
+    {field} +Nombre : string(100)
+    {field} +NumeroGrupo : int
+    {method} +aparato() : BelongsTo<Aparato>
+    {method} +elementos() : HasMany<ElementoDetallado>
+  }
+
+  class ElementoDetallado {
+    {field} +ID_Elemento : int (PK)
+    {field} +ID_Grupo : int (FK)
+    {field} +Nombre : string(100)
+    {field} +Descripcion : text
+    {field} +Dificultad : string(5) {A|B|C|D|E|F|G|H}
+    {field} +NotaBase : decimal(4,2)
+    {method} +grupo() : BelongsTo<GrupoElemento>
+  }
+
+  class RequisitoComposicion {
+    {field} +ID_Requisito : int (PK)
+    {field} +ID_Aparato : int (FK)
+    {field} +Descripcion : text
+    {field} +Obligatorio : tinyint(1)
+    {field} +Valor : decimal(4,2)
+    {method} +aparato() : BelongsTo<Aparato>
+  }
+}
+
+package "Controladores" #F9E79F {
+  class AparatoController {
+    {method} +index() : View
+    {method} +store(AparatoRequest) : RedirectResponse
+    {method} +create() : View
+    {method} +edit(id: int) : View
+    {method} +update(Request, id: int) : RedirectResponse
+    {method} +destroy(id: int) : RedirectResponse
+    {method} +reactivar(id: int) : RedirectResponse
+    {method} +desactivar(id: int) : RedirectResponse
+    {method} +finalizarMantenimiento(id: int) : RedirectResponse
+  }
+
+  class CompetenciaController {
+    {method} +index() : View
+    {method} +store(CompetenciaRequest) : RedirectResponse
+    {method} +edit(id: int) : View
+    {method} +update(Request, id: int) : RedirectResponse
+    {method} +destroy(id: int) : RedirectResponse
+    {method} +reactivar(id: int) : RedirectResponse
+  }
+}
+
+package "Form Requests" #E8DAEF {
+  class AparatoRequest {
+    {method} +rules() : array
+    {method} +messages() : array
+  }
+
+  class CompetenciaRequest {
+    {method} +rules() : array
+    {method} +messages() : array
+  }
+}
+
+package "Servicios" #D5F5E3 {
+  class AuditService {
+    {method} +log(evento, detalles) : void
+    {method} +created(model) : void
+    {method} +updated(model) : void
+    {method} +deleted(model) : void
+  }
+}
+
+' ===== RELACIONES =====
+AparatoController ..> Aparato : CRUD
+AparatoController ..> AparatoRequest : <<valida>>
+AparatoController ..> AuditService : <<registra>>
+
+CompetenciaController ..> Competencia : CRUD
+CompetenciaController ..> CompetenciaRequest : <<valida>>
+CompetenciaController ..> AuditService : <<registra>>
+
+Aparato "1" -- "*" SesionEntrenamiento : FK: ID_Aparato
+Aparato "1" -- "*" Entrenamiento : FK: ID_Aparato
+Aparato "1" -- "*" EvaluacionesJuez : FK: ID_Aparato
+Aparato "1" -- "*" DeduccionEjecucion : FK: ID_Aparato
+Aparato "1" -- "*" GrupoElemento : FK: ID_Aparato
+Aparato "1" -- "*" RequisitoComposicion : FK: ID_Aparato
+
+GrupoElemento "1" -- "*" ElementoDetallado : FK: ID_Grupo
+
+legend bottom
+  **Catálogo de Aparatos (6):**
+  Suelo, Caballo con Arzones, Anillas, Salto, Barras Paralelas, Barra Fija
+
+  **Ciclo de Mantenimiento:**
+  1. Aparato se crea en estado "Operativo"
+  2. desactivar() → "Fuera de Servicio" (no usable en sesiones)
+  3. finalizarMantenimiento() → "Operativo" con nueva fecha
+  4. necesitaMantenimiento() se evalúa en dashboard
+
+  **Estructura de Elementos por Aparato:**
+  Aparato → GrupoElemento (1..5 grupos FIG)
+  GrupoElemento → ElementoDetallado (dificultad A-H)
+  DeduccionEjecucion → reglas de descuento FIG por aparato
+  RequisitoComposicion → requisitos obligatorios por aparato
+endlegend
+@enduml

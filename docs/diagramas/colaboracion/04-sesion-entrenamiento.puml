@@ -1,0 +1,37 @@
+@startuml
+actor "Gimnasta" as gymnast
+participant "SesionView" as view
+participant "SesionEntrenamientoController" as ctrl
+participant "SesionEntrenamiento" as model
+participant "Usuario" as userModel
+participant "Aparato" as aptModel
+participant "Lesion" as lesModel
+participant "SesionEntrenamientoRequest" as request
+participant "AuditService" as audit
+
+gymnast -> view: 1: Solicita crear\nsesión
+view -> ctrl: 2: create()
+ctrl -> userModel: 3: scopeEntrenadores()->get()
+ctrl <-- userModel: 4: Entrenadores disponibles
+ctrl -> aptModel: 5: where('activo',1)->get()
+ctrl <-- aptModel: 6: Aparatos activos
+ctrl -> gymnast: 7: Formulario con\ndatos disponibles
+
+gymnast -> view: 8: Envía formulario\n(fecha, hora, aparato)
+view -> ctrl: 9: store(data)
+ctrl -> request: 10: Validar reglas
+request -> lesModel: 11: Verificar lesiones\ndel gimnasta
+request -> model: 12: Verificar conflictos\nde horario
+alt Sin conflictos
+ctrl -> model: 13: asginarEntrenadorAutomatico(\nfecha, hora, aparato)
+model -> userModel: 14: entrenadoresDisponibles()
+model <-- userModel: 15: Entrenadores sin\nconflicto
+model -> model: 16: Selecciona entrenador\ncon menos sesiones
+ctrl -> model: 17: create($data_completa)
+ctrl <-- model: 18: Sesion creada\n(Estado=Programada)
+ctrl -> audit: 19: log("Sesión creada")
+ctrl -> gymnast: 20: Confirmación\ncon datos asignados
+else Conflicto
+ctrl -> gymnast: 21: Error de validación
+end
+@enduml

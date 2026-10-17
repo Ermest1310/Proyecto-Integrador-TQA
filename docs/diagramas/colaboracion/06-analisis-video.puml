@@ -1,0 +1,36 @@
+@startuml
+actor "Usuario" as user
+participant "VideoView" as view
+participant "VideoAnalysisController" as ctrl
+participant "Video" as vidModel
+participant "FileUploadService" as uploader
+participant "MediaPipe" as mp
+participant "PoseResultado" as poseModel
+participant "OpenAI" as ai
+participant "AuditService" as audit
+
+user -> view: 1: Sube video para\nanálisis
+view -> ctrl: 2: uploadVideo(request)
+ctrl -> uploader: 3: uploadSecure($file,\n'videos/analisis')
+ctrl <-- uploader: 4: Ruta del archivo\nguardado
+ctrl -> vidModel: 5: create(['NombreArchivo'=>$ruta,\n'NombreOriginal'=>$name,\n'ID_Usuario'=>$user])
+ctrl <-- vidModel: 6: Video registrado
+ctrl -> user: 7: Video subido
+
+user -> view: 8: Inicia análisis\nde pose
+view -> ctrl: 9: savePoseResults(data)
+ctrl -> mp: 10: Procesa cada frame\n(landmarks corporales)
+ctrl <-- mp: 11: 33 landmarks por\nframe detectados
+ctrl -> poseModel: 12: create(['ID_Video'=>$id,\n'FrameNum'=>$n,\n'Landmarks'=>$json,\n'AngulosCalculados'=>$calc])
+ctrl <-- poseModel: 13: Resultados guardados
+ctrl -> poseModel: 14: Calcula estadísticas\nde ángulos
+ctrl <-- poseModel: 15: Promedios, máximos,\nmínimos por ángulo
+ctrl -> user: 16: Visualización de\npose + ángulos
+
+user -> view: 17: Solicita análisis\ncon IA
+view -> ctrl: 18: analyzeWithAI(data)
+ctrl -> ai: 19: Envía landmarks +\ncontexto FIG
+ctrl <-- ai: 20: Análisis técnico +\ndetección de errores
+ctrl -> audit: 21: log("Análisis IA\ncompletado")
+ctrl -> user: 22: Resultados del\nanálisis mostrados
+@enduml

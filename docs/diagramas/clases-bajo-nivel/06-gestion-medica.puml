@@ -1,0 +1,218 @@
+@startuml
+skinparam classBorderColor #2C3E50
+skinparam arrowColor #2C3E50
+skinparam defaultFontName Segoe UI
+skinparam classFontSize 10
+
+package "Modelos Médicos" #D4E6F1 {
+  class Lesion {
+    {field} +ID_Lesion : int (PK) {auto_increment}
+    {field} +ID_Gimnasta : int (FK → usuarios.ID_Usuario)
+    {field} +ID_Medico : int (FK → usuarios.ID_Usuario)
+    {field} +Tipo : string(100) {desgarro|fractura|esguince|tendinitis|contractura|contusion|luxacion|otro}
+    {field} +ParteCuerpo : string(50) {cabeza tronco miembro_superior miembro_inferior columna}
+    {field} +ParteEspecifica : string(100)
+    {field} +FechaLesion : date
+    {field} +FechaDiagnostico : date
+    {field} +FechaRecuperacion : date
+    {field} +Estado : enum('Lesionado','En Rehabilitacion','Recuperada')
+    {field} +Gravedad : enum('Leve','Moderada','Grave')
+    {field} +Tratamiento : text
+    {field} +TiempoRecuperacion : int {días estimados}
+    {field} +Observaciones : text
+    {field} +activo : tinyint(1)
+    {method} +gimnasta() : BelongsTo<Usuario>
+    {method} +medico() : BelongsTo<Usuario>
+    {method} +getPartesCuerpo() : array
+    {method} +getTiposLesion() : array
+    {method} +getGravedades() : array
+    {method} +getEstados() : array
+  }
+
+  class AptitudMedica {
+    {field} +ID_Aptitud : int (PK) {auto_increment}
+    {field} +ID_Gimnasta : int (FK → gimnastas.ID_Gimnasta)
+    {field} +FechaCertificacion : datetime
+    {field} +AptoParaEntrenar : tinyint(1)
+    {field} +RestriccionesMedicas : text
+    {field} +Diagnostico : text
+    {field} +MedicoResponsable : string(100)
+    {field} +Observaciones : text
+    {method} +gimnasta() : BelongsTo<Gimnasta>
+  }
+
+  class EvaluacionNutricional {
+    {field} +ID_Gimnasta : int (FK → gimnastas.ID_Gimnasta)
+    {field} +FechaEvaluacion : datetime
+    {field} +Peso : decimal(5,2)
+    {field} +Altura : decimal(5,2)
+    {field} +IMC : decimal(4,1)
+    {field} +PorcentajeGrasa : decimal(4,1)
+    {field} +MasaMuscular : decimal(4,1)
+    {field} +NivelHidratacion : string(50)
+    {field} +SeguimientoDieta : text
+    {field} +Recomendaciones : text
+    {field} +Observaciones : text
+    {method} +gimnasta() : BelongsTo<Gimnasta>
+  }
+
+  class EvaluacionPsicologica {
+    {field} +ID_Gimnasta : int (FK → gimnastas.ID_Gimnasta)
+    {field} +FechaEvaluacion : datetime
+    {field} +NivelAnsiedad : int {0-10}
+    {field} +NivelEstres : int {0-10}
+    {field} +NivelMotivacion : int {0-10}
+    {field} +CalidadSueno : int {0-10}
+    {field} +Concentracion : int {0-10}
+    {field} +Observaciones : text
+    {field} +Recomendaciones : text
+    {method} +gimnasta() : BelongsTo<Gimnasta>
+  }
+
+  class EvaluacionFisiologica {
+    {field} +ID_Gimnasta : int (FK → gimnastas.ID_Gimnasta)
+    {field} +FechaEvaluacion : datetime
+    {field} +FCReposo : int {60-100 bpm}
+    {field} +FCEsfuerzo : int {120-220 bpm}
+    {field} +PresionSistolica : int {mmHg}
+    {field} +PresionDiastolica : int {mmHg}
+    {field} +SaturacionOxigeno : decimal(4,1) {95-100%}
+    {field} +Observaciones : text
+    {method} +gimnasta() : BelongsTo<Gimnasta>
+  }
+
+  class EvaluacionRespiratoria {
+    {field} +ID_Gimnasta : int (FK → gimnastas.ID_Gimnasta)
+    {field} +FechaEvaluacion : datetime
+    {field} +CapacidadPulmonar : decimal(5,2) {litros}
+    {field} +SaturacionOxigeno : decimal(4,1) {95-100%}
+    {field} +DiagnosticoRespiratorio : text
+    {field} +Observaciones : text
+    {method} +gimnasta() : BelongsTo<Gimnasta>
+  }
+
+  class Gimnasta {
+    {field} +ID_Gimnasta : int (PK)
+    {field} +ID_Usuario : int (FK)
+    {field} +aptitudesMedicas() : HasMany<AptitudMedica>
+    {field} +evaluacionesNutricionales() : HasMany<EvaluacionNutricional>
+    {field} +evaluacionesPsicologicas() : HasMany<EvaluacionPsicologica>
+    {field} +evaluacionesFisiologicas() : HasMany<EvaluacionFisiologica>
+    {field} +evaluacionesRespiratorias() : HasMany<EvaluacionRespiratoria>
+  }
+}
+
+package "Controladores" #F9E79F {
+  class LesionController {
+    {method} +index(Request) : View
+    {method} +create() : View
+    {method} +store(LesionRequest) : RedirectResponse
+    {method} +show(id: int) : View
+    {method} +edit(id: int) : View
+    {method} +update(Request, id: int) : RedirectResponse
+    {method} +destroy(id: int) : RedirectResponse
+    {method} +reactivar(id: int) : RedirectResponse
+    {method} +getGimnastas() : JsonResponse
+  }
+
+  class MedicoLesionController {
+    {method} +index() : View
+    {method} +create() : View
+    {method} +store(LesionRequest) : RedirectResponse
+    {method} +show(id: int) : View
+    {method} +edit(id: int) : View
+    {method} +update(Request, id: int) : RedirectResponse
+  }
+
+  class AnalisisMovimientoController {
+    {method} +dashboard() : View
+    {method} +aptitudIndex() : View
+    {method} +aptitudStore(Request) : RedirectResponse
+    {method} +nutricionalIndex() : View
+    {method} +nutricionalStore(Request) : RedirectResponse
+    {method} +respiratoriaIndex() : View
+    {method} +respiratoriaStore(Request) : RedirectResponse
+    {method} +psicologicaIndex() : View
+    {method} +psicologicaStore(Request) : RedirectResponse
+    {method} +fisiologicaIndex() : View
+    {method} +fisiologicaStore(Request) : RedirectResponse
+  }
+
+  class MedicoController {
+    {method} +dashboard() : View
+    {method} +verGimnasta(id: int) : View
+    {method} +historialMedico(id: int) : View
+  }
+
+  class AreaMedicaController {
+    {method} +index() : View
+    {method} +fisioterapia() : View
+    {method} +nutricion() : View
+    {method} +psicologia() : View
+    {method} +chatbot() : View
+    {method} +handleChatbotMessage(Request) : JsonResponse
+    {method} +medicina() : View
+    {method} +rehabilitacion() : View
+  }
+}
+
+package "Form Requests" #E8DAEF {
+  class LesionRequest {
+    {method} +rules() : array
+    {method} +messages() : array
+    {method} +withValidator(Validator) : void
+  }
+}
+
+package "Servicios" #D5F5E3 {
+  class AuditService {
+    {method} +log(evento, detalles) : void
+    {method} +created(model) : void
+    {method} +updated(model) : void
+    {method} +deleted(model) : void
+  }
+}
+
+' ===== RELACIONES =====
+LesionController ..> Lesion : CRUD completo
+LesionController ..> Usuario : consulta gimnastas/médicos
+LesionController ..> LesionRequest : <<valida>>
+LesionController ..> AuditService : <<registra>>
+
+MedicoLesionController ..> Lesion : CRUD (solo sus pacientes)
+AnalisisMovimientoController ..> Gimnasta : consulta
+AnalisisMovimientoController ..> AptitudMedica : CRUD
+AnalisisMovimientoController ..> EvaluacionNutricional : CRUD
+AnalisisMovimientoController ..> EvaluacionPsicologica : CRUD
+AnalisisMovimientoController ..> EvaluacionFisiologica : CRUD
+AnalisisMovimientoController ..> EvaluacionRespiratoria : CRUD
+
+AreaMedicaController ..> Lesion : consulta
+
+Lesion "N" -- "1" Usuario : FK: ID_Gimnasta (gimnasta)
+Lesion "N" -- "1" Usuario : FK: ID_Medico (médico)
+
+Gimnasta "1" -- "*" AptitudMedica : FK: ID_Gimnasta
+Gimnasta "1" -- "*" EvaluacionNutricional : FK: ID_Gimnasta
+Gimnasta "1" -- "*" EvaluacionPsicologica : FK: ID_Gimnasta
+Gimnasta "1" -- "*" EvaluacionFisiologica : FK: ID_Gimnasta
+Gimnasta "1" -- "*" EvaluacionRespiratoria : FK: ID_Gimnasta
+
+legend bottom
+  **Gestión de Lesiones:**
+  - Estado: Lesionado → En Rehabilitacion → Recuperada
+  - Médico registra, actualiza tratamiento, cierra al recuperar
+
+  **Evaluaciones Médicas (5 tipos):**
+  | Evaluación | Indicadores Clave |
+  |---|---|
+  | Aptitud Médica | Apto sí/no, restricciones |
+  | Nutricional | IMC, %grasa, masa muscular |
+  | Psicológica | Ansiedad, estrés, motivación |
+  | Fisiológica | FC, presión, saturación |
+  | Respiratoria | Capacidad pulmonar |
+
+  **Chatbot Psicología:**
+  AreaMedicaController::handleChatbotMessage() usa OpenAI GPT-3.5
+endlegend
+@enduml

@@ -1,0 +1,104 @@
+@startuml
+skinparam classBorderColor #2C3E50
+skinparam arrowColor #2C3E50
+skinparam defaultFontName Segoe UI
+skinparam classFontSize 10
+
+package "Modelos" #D4E6F1 {
+  class Video {
+    {field} +ID_Video : int (PK) {auto_increment}
+    {field} +ID_Usuario : int (FK → usuarios.ID_Usuario)
+    {field} +NombreArchivo : string(255)
+    {field} +NombreOriginal : string(255)
+    {field} +Tipo : string(50)
+    {field} +Tamano : int
+    {field} +Descripcion : text
+    {method} +usuario() : BelongsTo<Usuario>
+    {method} +poseResultados() : HasMany<PoseResultado>
+  }
+
+  class PoseResultado {
+    {field} +ID_Video : int (FK → videos.ID_Video)
+    {field} +FrameNum : int
+    {field} +Landmarks : json {33 landmarks x (x,y,z,visibility)}
+    {field} +AngulosCalculados : json
+    {method} +video() : BelongsTo<Video>
+  }
+
+  class Usuario {
+    {field} +ID_Usuario : int (PK)
+    {method} +videos() : HasMany<Video>
+  }
+}
+
+package "Controladores" #F9E79F {
+  class VideoAnalysisController {
+    {method} +index() : View
+    {method} +videoUpload() : View
+    {method} +uploadVideo(Request) : JsonResponse
+    {method} +savePoseResults(Request) : JsonResponse
+    {method} +analyzeWithAI(Request) : JsonResponse
+    {method} +angleAnalysis() : View
+    {method} +statistics() : View
+  }
+}
+
+package "Servicios" #D5F5E3 {
+  class FileUploadService {
+    {field} -maxSize : int = 5242880
+    {field} -allowedExtensions : array = ['mp4','avi','mov','webm']
+    {field} -allowedMimes : array = ['video/mp4','video/avi','video/quicktime','video/webm']
+    {method} +uploadSecure(file: UploadedFile, path: string) : string
+    {method} +deleteFile(path: string) : bool
+  }
+
+  class AuditService {
+    {method} +log(evento, detalles) : void
+    {method} +created(model) : void
+  }
+}
+
+package "Integraciones Externas" #F2F3F4 {
+  class MediaPipe {
+    {method} +procesarVideo(ruta: string) : array
+    {method} +detectarLandmarks(frame: image) : array {33 puntos}
+    {method} +calcularAngulos(landmarks: array) : array
+    {method} +calcularEstadisticas(angulos: array) : array
+  }
+
+  class OpenAI {
+    {field} -apiKey : string
+    {field} -model : string = 'gpt-3.5-turbo'
+    {method} +analizarMovimiento(landmarks: array, reglasFIG: string) : array
+    {method} -prepararPrompt(contextoFIG: string) : string
+    {method} -analizarRespuesta(response: string) : array {notas, errores, recomendaciones}
+  }
+}
+
+' ===== RELACIONES =====
+VideoAnalysisController ..> Video : CRUD (sube/consulta)
+VideoAnalysisController ..> PoseResultado : guarda/consulta
+VideoAnalysisController ..> FileUploadService : <<sube archivo>>
+VideoAnalysisController ..> AuditService : <<registra>>
+VideoAnalysisController ..> MediaPipe : <<procesa video>>
+VideoAnalysisController ..> OpenAI : <<analiza con IA>>
+
+Video "1" -- "*" PoseResultado : FK: ID_Video
+Video "*" -- "1" Usuario : FK: ID_Usuario
+
+legend bottom
+  **Pipeline de Análisis de Video:**
+
+  1. Subida: uploadVideo() → FileUploadService → Video model
+  2. Procesamiento: savePoseResults()
+     - MediaPipe procesa frame por frame
+     - 33 landmarks por persona detectados
+     - Ángulos calculados: codos, rodillas, caderas, hombros, tobillos
+     - Estadísticas: promedio, máx, mín por ángulo
+  3. Análisis IA: analyzeWithAI()
+     - Envía landmarks + reglas FIG de deducciones por aparato
+     - OpenAI devuelve: nota sugerida, errores detectados, recomendaciones
+  4. Visualización: angleAnalysis() muestra gráficas de ángulos
+  5. Dashboard: statistics() muestra estadísticas generales
+endlegend
+@enduml

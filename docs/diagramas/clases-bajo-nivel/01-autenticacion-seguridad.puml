@@ -1,0 +1,168 @@
+@startuml
+skinparam classBorderColor #2C3E50
+skinparam arrowColor #2C3E50
+skinparam defaultFontName Segoe UI
+skinparam classFontSize 10
+
+package "Modelos" #D4E6F1 {
+  class Usuario {
+    {field} +ID_Usuario : int (PK)
+    {field} +NombreUsuario : string(50)
+    {field} +Contrasena : string(255) {bcrypt hash}
+    {field} +Email : string(100)
+    {field} +CedulaIdentidad : string(20)
+    {field} +Nombre : string(50)
+    {field} +Apellido : string(50)
+    {field} +FechaNacimiento : date
+    {field} +Nacionalidad : string(50)
+    {field} +Peso : decimal(5,2)
+    {field} +Altura : decimal(5,2)
+    {field} +Nivel : string(20) {Principiante|Intermedio|Avanzado|Elite}
+    {field} +ID_Rol : int (FK)
+    {field} +FotoPerfil : string(255)
+    {field} +Contacto : string(100)
+    {field} +activo : tinyint(1)
+    {method} +rol() : BelongsTo<Rol>
+    {method} +getAuthPassword() : string
+  }
+
+  class Rol {
+    {field} +ID_Rol : int (PK)
+    {field} +NombreRol : string(50) {Entrenador|Gimnasta|Administrador|Medico|Postulacion|Juez}
+    {field} +activo : tinyint(1)
+  }
+
+  class Sesion {
+    {field} +usuario_id : string
+    {field} +usuario_rol : int
+    {field} +usuario_nombre_rol : string
+    {method} +put(key, value) : void
+    {method} +get(key) : mixed
+    {method} +has(key) : bool
+  }
+}
+
+package "Controladores" #F9E79F {
+  class AuthController {
+    {method} +showLogin() : View
+    {method} +login(Request) : RedirectResponse
+    {method} +register(Request) : RedirectResponse
+    {method} +logout() : RedirectResponse
+  }
+}
+
+package "Middleware" #FADBD8 {
+  class AuthMiddleware {
+    {field} -redirecTo : string = '/login'
+    {method} +handle(Request, Closure) : Response|RedirectResponse
+  }
+
+  class SecurityLogger {
+    {field} -maxIntentos : int = 5
+    {method} +handle(Request, Closure) : Response
+    {method} -detectarActividadSospechosa(Request) : bool
+    {method} -registrarIntentoFallido(Request) : void
+  }
+
+  class SanitizeInput {
+    {method} +handle(Request, Closure) : Response
+    {method} -sanitizarCampo(campo, tipo) : mixed
+  }
+}
+
+package "Servicios" #D5F5E3 {
+  class AuditService {
+    {field} -archivoLog : string = 'storage/logs/audit.log'
+    {method} +log(evento: string, detalles: array) : void
+    {method} +created(model: Model) : void
+    {method} +updated(model: Model) : void
+    {method} +deleted(model: Model) : void
+    {method} +login(usuario: Usuario) : void
+    {method} +logout(usuario: Usuario) : void
+    {method} +security(evento: string) : void
+    {method} +critical(evento: string) : void
+    {method} +access(usuario: Usuario, accion: string) : void
+    {method} -escribirLog(nivel: string, mensaje: string, contexto: array) : void
+  }
+
+  class PermissionService {
+    {field} -permisos : array = [rol=>[permisos...]]
+    {method} +can(usuario: Usuario, permiso: string) : bool
+    {method} +isAdmin(usuario: Usuario) : bool
+    {method} +canManageUsers(usuario: Usuario) : bool
+    {method} +canViewDashboard(usuario: Usuario) : bool
+    {method} +canManageApparatus(usuario: Usuario) : bool
+    {method} +abort(permiso: string) : void
+    {method} -cargarPermisos() : array
+  }
+
+  class SanitizationService {
+    {method} +sanitizeString(input: string, maxLength: int) : string
+    {method} +sanitizeEmail(email: string) : string
+    {method} +sanitizeName(name: string) : string
+    {method} +sanitizeNumeric(input: string) : string
+    {method} +sanitizeArray(input: array) : array
+    {method} +detectMalicious(input: string) : bool
+    {method} -detectarSQLInjection(input: string) : bool
+    {method} -detectarXSS(input: string) : bool
+    {method} -detectarPathTraversal(input: string) : bool
+    {method} -detectarCommandInjection(input: string) : bool
+  }
+
+  class UsuarioService {
+    {field} +NACIONALIDADES : array = ['Venezuela','Colombia','Argentina',...]
+    {method} +getValidationRules(rol: int, id_excluir: int|null) : array
+    {method} +getValidationMessages() : array
+    {method} +getNacionalidades() : array
+  }
+}
+
+package "Form Requests" #E8DAEF {
+  class UsuarioRequest {
+    {method} +rules() : array
+    {method} +messages() : array
+  }
+  class StoreUsuarioRequest {
+    {method} +rules() : array
+    {method} +messages() : array
+  }
+  class UpdateUsuarioRequest {
+    {method} +rules() : array
+    {method} +messages() : array
+    {method} +withValidator(Validator) : void
+  }
+}
+
+' ===== RELACIONES =====
+AuthController ..> Usuario : <<consulta>>
+AuthController ..> Rol : <<consulta>>
+AuthController ..> Sesion : <<escribe>>
+AuthController ..> AuditService : <<registra>>
+AuthController ..> SanitizationService : <<sanitiza>>
+AuthController ..> PermissionService : <<verifica>>
+
+AuthController ..> UsuarioRequest : <<valida>>
+AuthController ..> StoreUsuarioRequest : <<valida>>
+
+AuthMiddleware ..> AuthController : <<protege>>
+SecurityLogger ..> AuthController : <<monitorea>>
+SanitizeInput ..> AuthController : <<filtra>>
+
+AuthController -right-> AuthController : <<registro>>\nregister()→crea Usuario
+AuthController -right-> AuthController : <<login>>\nlogin()→Sesion
+AuthController -right-> AuthController : <<logout>>\nlogout()→destruye Sesion
+
+Usuario "1" -- "1" Rol : FK: ID_Rol
+
+legend bottom
+  **Flujo de Autenticación:**
+  1. showLogin() → vista login
+  2. login(Request) → valida credenciales
+  3. Busca Usuario por NombreUsuario
+  4. Hash::check(Contrasena)
+  5. Crea Sesion con datos del usuario
+  6. AuditService::login()
+  7. Redirige según Rol
+  8. logout() → destruye sesión
+endlegend
+@enduml

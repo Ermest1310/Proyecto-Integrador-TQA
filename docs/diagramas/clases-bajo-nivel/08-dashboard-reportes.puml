@@ -1,0 +1,159 @@
+@startuml
+skinparam classBorderColor #2C3E50
+skinparam arrowColor #2C3E50
+skinparam defaultFontName Segoe UI
+skinparam classFontSize 10
+
+package "Modelos" #D4E6F1 {
+  class Competencia {
+    {field} +ID_Competencia : int (PK) {auto_increment}
+    {field} +NombreCompetencia : string(100)
+    {field} +Fecha : date
+    {field} +Ubicacion : string(150)
+    {field} +Descripcion : text
+    {field} +activo : tinyint(1)
+    {method} +gimnastas() : BelongsToMany<Gimnasta> {pivot: competencia_gimnastas}
+  }
+
+  class CompetenciaGimnasta {
+    {field} +ID_Competencia : int (PK) {FK}
+    {field} +ID_Gimnasta : int (PK) {FK}
+    {method} +competencia() : BelongsTo<Competencia>
+    {method} +gimnasta() : BelongsTo<Gimnasta>
+  }
+
+  class Gimnasta {
+    {field} +ID_Gimnasta : int (PK)
+    {field} +Nombre : string(50)
+    {field} +Apellido : string(50)
+    {method} +competencias() : BelongsToMany<Competencia> {pivot: competencia_gimnastas}
+  }
+
+  class EvaluacionesJuez {
+    {field} +ID_EvaluacionJuez : int (PK)
+    {field} +ID_Competencia : int (FK)
+    {field} +ID_Gimnasta : int (FK)
+    {field} +ID_Aparato : int (FK)
+    {field} +nota_final : decimal(5,2)
+    {field} +nota_dificultad : decimal(5,2)
+    {field} +nota_ejecucion : decimal(5,2)
+    {field} +estado : enum
+  }
+
+  class Aparato {
+    {field} +ID_Aparato : int (PK)
+    {field} +Nombre : string(50)
+  }
+}
+
+package "Controladores" #F9E79F {
+  class CompetenciaController {
+    {method} +index() : View
+    {method} +store(CompetenciaRequest) : RedirectResponse
+    {method} +edit(id: int) : View
+    {method} +update(Request, id: int) : RedirectResponse
+    {method} +destroy(id: int) : RedirectResponse
+    {method} +reactivar(id: int) : RedirectResponse
+  }
+
+  class DashboardController {
+    {method} +index() : View
+    {method} +adminInicio() : View
+    {method} +adminHistorial() : View
+    {method} -obtenerEstadisticas() : array
+    {method} -obtenerActividadReciente() : array
+  }
+
+  class EntrenadorController {
+    {method} +dashboard() : View
+    {method} +dashboardGimnasta(id: int) : View
+  }
+
+  class GimnastaController {
+    {method} +dashboard() : View
+    {method} +miProgreso() : View
+  }
+
+  class MedicoController {
+    {method} +dashboard() : View
+  }
+
+  class JuezController {
+    {method} +dashboard() : View
+  }
+
+  class ReporteController {
+    {method} +index() : View
+    {method} +reporteCompleto() : View
+    {method} +exportarPdf() : Binary
+    {method} +backup() : View
+    {method} +crearBackup() : RedirectResponse
+    {method} +descargarBackup(filename: string) : Binary
+  }
+
+  class AuditController {
+    {method} +index(Request) : View
+  }
+}
+
+package "Servicios" #D5F5E3 {
+  class PdfService {
+    {method} +generarReporteCompleto() : array
+    {method} +generarReporteGimnastas() : array
+    {method} +generarReporteSesiones() : array
+    {method} -contarGimnastasPorNivel() : array
+    {method} -contarSesionesPorEstado() : array
+    {method} -obtenerPromedioCalificaciones() : float
+    {method} -contarLesionesActivas() : int
+    {method} -obtenerAparatosEnMantenimiento() : array
+  }
+
+  class FPDF {
+    {method} +AddPage() : void
+    {method} +SetFont(family, style, size) : void
+    {method} +Cell(w, h, txt, border) : void
+    {method} +Ln(h) : void
+    {method} +Image(file, x, y, w) : void
+    {method} +Output(dest, name) : string
+  }
+
+  class AuditService {
+    {method} +log(evento, detalles) : void
+  }
+}
+
+' ===== RELACIONES =====
+DashboardController ..> Usuario : consulta stats
+DashboardController ..> SesionEntrenamiento : consulta stats
+DashboardController ..> Lesion : consulta stats
+DashboardController ..> Aparato : consulta stats
+
+ReporteController ..> PdfService : <<genera datos>>
+ReporteController ..> FPDF : <<genera pdf>>
+ReporteController ..> AuditService : <<registra>>
+
+AuditController ..> AuditService : <<lee logs>>
+
+Competencia "1" -- "*" CompetenciaGimnasta : FK: ID_Competencia
+CompetenciaGimnasta "*" -- "1" Gimnasta : FK: ID_Gimnasta
+Competencia "1" -- "*" EvaluacionesJuez : FK: ID_Competencia
+
+legend bottom
+  **Dashboard por Rol:**
+  | Rol | Vista |
+  |---|---|
+  | Administrador | adminInicio() - stats globales, gráficos |
+  | Entrenador | misGimnastas(), misSesiones(), calendario |
+  | Gimnasta | miProgreso(), misSesiones(), calendario |
+  | Médico | dashboard() - pacientes, lesiones activas |
+  | Juez | dashboard() - evaluaciones pendientes |
+
+  **Reportes:**
+  - reporteCompleto(): vista web con KPIs
+  - exportarPdf(): genera PDF con FPDF
+    - Gimnastas por nivel, sesiones por estado
+    - Promedio calificaciones, lesiones activas
+    - Aparatos en mantenimiento
+  - backup: mysqldump → archivo .sql.gz
+endlegend
+@enduml

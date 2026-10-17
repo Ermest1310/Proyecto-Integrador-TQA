@@ -1,0 +1,39 @@
+@startuml
+actor "Administrador" as admin
+participant "ReporteView" as view
+participant "ReporteController" as ctrl
+participant "PdfService" as pdfSvc
+participant "FPDF" as fpdf
+participant "BackupManager" as backup
+participant "AuditService" as audit
+
+admin -> view: 1: Accede a reportes
+view -> ctrl: 2: index()
+ctrl -> pdfSvc: 3: generarReporteCompleto()
+pdfSvc -> DB: 4: Estadísticas de\ntablas principales
+pdfSvc <-- DB: 5: Datos agregados
+ctrl <-- pdfSvc: 6: Array con datos
+ctrl -> admin: 7: Dashboard de reportes\ncon KPIs
+
+admin -> view: 8: Exporta PDF completo
+view -> ctrl: 9: exportarPdf()
+ctrl -> pdfSvc: 10: generarReporteGimnastas()
+ctrl -> pdfSvc: 11: generarReporteSesiones()
+pdfSvc -> DB: 12: Consultas agregadas
+ctrl <-- pdfSvc: 13: Datos completos
+ctrl -> fpdf: 14: Construye PDF con\ntablas y gráficos
+ctrl <-- fpdf: 15: PDF generado
+ctrl -> admin: 16: Descarga PDF
+
+admin -> view: 17: Crea backup\nBD
+view -> ctrl: 18: crearBackup()
+ctrl -> backup: 19: mysqldump\ngimnasia_unificada
+ctrl <-- backup: 20: Archivo .sql\ncomprimido
+ctrl -> audit: 21: log("Backup creado")
+ctrl -> admin: 22: Backup disponible\npara descarga
+
+admin -> view: 23: Descarga backup
+view -> ctrl: 24: descargarBackup($file)
+ctrl -> backup: 25: Obtiene ruta\ndel archivo
+ctrl -> admin: 26: Descarga .sql.gz
+@enduml

@@ -1,0 +1,27 @@
+@startuml
+actor "Usuario" as user
+participant "LoginView" as view
+participant "AuthController" as ctrl
+participant "Usuario" as model
+participant "Rol" as rol
+participant "Session" as sess
+participant "AuditService" as audit
+
+user -> view: 1: Ingresa credenciales\n(NombreUsuario, Contrasena)
+view -> ctrl: 2: login(request)
+ctrl -> model: 3: where('NombreUsuario', $user)
+ctrl <-- model: 4: Usuario object
+ctrl -> ctrl: 5: Hash::check($pass, $usuario->Contrasena)
+alt Credenciales válidas
+ctrl -> sess: 6: put('usuario_id', $id)
+ctrl -> sess: 7: put('usuario_rol', $rol)
+ctrl -> rol: 8: find($usuario->ID_Rol)
+ctrl <-- rol: 9: Rol object
+ctrl -> sess: 10: put('usuario_nombre_rol', $rol->NombreRol)
+ctrl -> audit: 11: login($usuario)
+ctrl -> user: 12: Redirect a dashboard\nsegún rol
+else Credenciales inválidas
+ctrl -> audit: 13: log("Intento fallido")
+ctrl -> user: 14: Redirect a login\ncon error
+end
+@enduml

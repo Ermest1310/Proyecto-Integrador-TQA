@@ -1,0 +1,1184 @@
+{
+  "metadata": {
+    "source": "Codigo de Puntuacion FIG 2025-2028 (GAM)",
+    "total_rules": 147
+  },
+  "rules": [
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "D",
+      "descripcion": "Ejercicio más largo de 70 seg.",
+      "valor": 0.1,
+      "criterios": "≤ 2 seg."
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "D",
+      "descripcion": "Ejercicio más largo de 70 seg.",
+      "valor": 0.3,
+      "criterios": ">2 - 5 seg."
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "D",
+      "descripcion": "Ejercicio más largo de 70 seg.",
+      "valor": 0.5,
+      "criterios": "> 5 seg."
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "D",
+      "descripcion": "Caer o tocar con un pie o una mano fuera de la superficie de suelo.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "D",
+      "descripcion": "Tocar con pies, manos, pie y mano o cualquier otra parte del cuerpo fuera de la superficie del suelo.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "D",
+      "descripcion": "Recepción directamente fuera de la superficie del suelo.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "D",
+      "descripcion": "No pasar por y/o desde cada esquina.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "D",
+      "descripcion": "Usar la misma diagonal más de 3 veces seguidas",
+      "valor": 0.3,
+      "criterios": "+\n(una vez en el\nejercicio)"
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "D",
+      "descripcion": "Sin elemento de mortal múltiple (salida para senior)",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "D",
+      "descripcion": "Sin balanza de una pierna",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "D",
+      "descripcion": "Elementos iniciados fuera de la superficie del suelo.",
+      "valor": 0.1,
+      "criterios": "Sin valor"
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "E",
+      "descripcion": "Altura insuficiente en los elementos acrobáticos.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "E",
+      "descripcion": "Altura insuficiente en los elementos acrobáticos.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "E",
+      "descripcion": "Falta de flexibilidad en los elementos estáticos.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "E",
+      "descripcion": "Falta de flexibilidad en los elementos estáticos.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "E",
+      "descripcion": "Elementos a rodar sin apoyo de manos.",
+      "valor": 0.3,
+      "criterios": "Con el dorso de\nlas manos"
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "E",
+      "descripcion": "Elementos a rodar sin apoyo de manos.",
+      "valor": 0.5,
+      "criterios": "Sin apoyo"
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "E",
+      "descripcion": "Parada 2 seg. o más antes de un elemento o serie acrobática.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "E",
+      "descripcion": "Recepción incontrolada y momentánea (también en las transiciones).",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "E",
+      "descripcion": "Recepción incontrolada y momentánea (también en las transiciones).",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "E",
+      "descripcion": "Recepción incontrolada y momentánea (también en las transiciones).",
+      "valor": 0.5,
+      "criterios": null
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "E",
+      "descripcion": "Pasos o transiciones simples para llegar a las esquinas.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "E",
+      "descripcion": "Saltar a la recepción frontal después de un mortal",
+      "valor": 0.5,
+      "criterios": null
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "E",
+      "descripcion": "Desviación del plano del movimiento",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Suelo",
+      "ID_Aparato": 1,
+      "tipo": "E",
+      "descripcion": "Desviación del plano del movimiento",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Falta de amplitud en las tijeras e impulsos de piernas.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Falta de amplitud en las tijeras e impulsos de piernas.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Apoyo invertido con fuerza visible.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Apoyo invertido con fuerza visible.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Apoyo invertido con fuerza visible.",
+      "valor": 0.5,
+      "criterios": "+ NR"
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Parada o pasos en apoyo invertido.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Parada o pasos en apoyo invertido.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Parada o pasos en apoyo invertido.",
+      "valor": 0.5,
+      "criterios": "+ NR"
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Flexionar las caderas en los molinos o flairs.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Flexionar las caderas en los molinos o flairs.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Falta de extensión del cuerpo en molinos o flairs. Cada elemento.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Piernas abiertas en los elementos.",
+      "valor": 0.1,
+      "criterios": "0º - 30º"
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Piernas abiertas en los elementos.",
+      "valor": 0.3,
+      "criterios": ">30º - 60º"
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Piernas abiertas en los elementos.",
+      "valor": 0.5,
+      "criterios": ">60º - 90º"
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Desviación angular en molinos en apoyo transversal y desplazamientos.",
+      "valor": 0.1,
+      "criterios": ">15º- 30º"
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Desviación angular en molinos en apoyo transversal y desplazamientos.",
+      "valor": 0.3,
+      "criterios": ">30º- 45º"
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Desviación angular en molinos en apoyo transversal y desplazamientos.",
+      "valor": 0.5,
+      "criterios": ">45º NR."
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Recepción oblicua o no mirando en dirección al eje largo del caballo.",
+      "valor": 0.1,
+      "criterios": "+\nDesviación > 45º"
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Recepción oblicua o no mirando en dirección al eje largo del caballo.",
+      "valor": 0.3,
+      "criterios": "+\nDesviación 90°"
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Posición del cuerpo por debajo de los 30º de la horizontal en las salidas que no son al apoyo invertido.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Tijeras al apoyo invertido flexionando caderas.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Tijeras al apoyo invertido flexionando caderas.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Tijeras al apoyo invertido flexionando caderas.",
+      "valor": 0.5,
+      "criterios": "+ NR"
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Tijeras al apoyo invertido sin juntar las piernas.",
+      "valor": 0.1,
+      "criterios": "≤ Ancho hombros"
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Tijeras al apoyo invertido sin juntar las piernas.",
+      "valor": 0.3,
+      "criterios": "> Ancho hombros"
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "½ balanceo extra subiendo una pierna sin cambiar de lado.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Inestabilidad en la salida por el apoyo invertido, problemas de giros.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Inestabilidad en la salida por el apoyo invertido, problemas de giros.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Bajar las piernas en los elementos al apoyo inv. (desde la posición original)",
+      "valor": 0.1,
+      "criterios": "0 - 15º"
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Bajar las piernas en los elementos al apoyo inv. (desde la posición original)",
+      "valor": 0.3,
+      "criterios": ">15º - 30º"
+    },
+    {
+      "aparato": "Caballo con Arzones",
+      "ID_Aparato": 2,
+      "tipo": "E",
+      "descripcion": "Bajar las piernas en los elementos al apoyo inv. (desde la posición original)",
+      "valor": 0.5,
+      "criterios": ">30 - 45º\n>45º NR."
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "D",
+      "descripcion": "Sin ejecutar un impulso al apoyo invertido.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Piernas abiertas u otra mala ejecución para subir a las anillas",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Impulso previo antes de empezar.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Impulso inicial del entrenador al gimnasta.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Corte de vuelo en impulso atrás.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Lentitud, interrupción o fase de apoyo durante Jonasson y Yamawaki.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Lentitud, interrupción o fase de apoyo durante Jonasson y Yamawaki.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Lentitud, interrupción o fase de apoyo durante Jonasson y Yamawaki.",
+      "valor": 0.5,
+      "criterios": "+ SR."
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Parar un elemento sin valor 2 seg. o más.",
+      "valor": 0.1,
+      "criterios": "Cada vez"
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Errores de composición.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Presa incorrecta (sobre el agarre) en las posiciones de fuerza (cada vez).",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Doblar brazos durante los impulsos a o en las posiciones de fuerza .",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Doblar brazos durante los impulsos a o en las posiciones de fuerza .",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Doblar brazos durante los impulsos a o en las posiciones de fuerza .",
+      "valor": 0.5,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Doblar brazos en el mantenimiento y subida a elementos de fuerza.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Doblar brazos en el mantenimiento y subida a elementos de fuerza.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Doblar brazos en el mantenimiento y subida a elementos de fuerza.",
+      "valor": 0.5,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Tocar cables o correas con brazos, pies u otra parte del cuerpo.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Apoyarse o balancearse con los pies o las piernas en los cables.",
+      "valor": 0.5,
+      "criterios": "+ SR."
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Caída desde el apoyo invertido.",
+      "valor": 0.5,
+      "criterios": "+ SR."
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Balanceo excesivo de los cables (por elemento).",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Subir a un elemento de fuerza desde una posición previa alta",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Subir a un elemento de fuerza desde una posición previa alta",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Tocar o apoyar los brazos en el cuerpo en la Hirondelle.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Tocar o apoyar los brazos en el cuerpo en la Hirondelle.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Impulso a fuerza.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Anillas",
+      "ID_Aparato": 3,
+      "tipo": "E",
+      "descripcion": "Impulso a fuerza.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "D",
+      "descripcion": "Caer o tocar con una mano o un pie fuera del área de recepción.",
+      "valor": 0.1,
+      "criterios": "0.1 de la nota final"
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "D",
+      "descripcion": "Tocar con pies, manos, pie y mano o cualquier parte del cuerpo fuera del área de recepción.",
+      "valor": 0.3,
+      "criterios": "0.3 de la nota final"
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "D",
+      "descripcion": "Caer directamente fuera del área de recepción.",
+      "valor": 0.3,
+      "criterios": "0.3 de la nota final"
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "D",
+      "descripcion": "Más de 25 metros de carrera.",
+      "valor": 0.5,
+      "criterios": "0,50 de la nota final por el juez D1"
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "D",
+      "descripcion": "Saltos ilegales o no válidos.",
+      "valor": 0.0,
+      "criterios": "Nota 0,00 para el salto"
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "D",
+      "descripcion": "No usar el anillo de seguridad del trampolín en los saltos de entrada con rondada.",
+      "valor": 0.0,
+      "criterios": "Nota 0,00 para el salto"
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "D",
+      "descripcion": "Repetir el 1er salto en la Calificación o en la final de salto.",
+      "valor": 0.0,
+      "criterios": "Nota 0,00 para el salto"
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "D",
+      "descripcion": "Repetir un salto del mismo grupo en Calificación o en la final de salto.",
+      "valor": 2.0,
+      "criterios": "2,0 punto de deducción para el 2º\nsalto"
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "D",
+      "descripcion": "Ejecutar más de 2 saltos en el entrenamiento",
+      "valor": 0.3,
+      "criterios": "0,30 del primer salto si se ejecutan 2\nsaltos - Calific. y final de aparatos"
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "D",
+      "descripcion": "Carrera de impulso suplementaria.",
+      "valor": 1.0,
+      "criterios": "1,0 punto del salto implicado"
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Errores de ejecución en la 1ª fase.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Errores de ejecución en la 1ª fase.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Errores de ejecución en la 1ª fase.",
+      "valor": 0.5,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Errores técnicos en la 1ª fase.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Errores técnicos en la 1ª fase.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Errores técnicos en la 1ª fase.",
+      "valor": 0.5,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "No pasar por la vertical en la posición de apoyo invertido.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "No pasar por la vertical en la posición de apoyo invertido.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "No pasar por la vertical en la posición de apoyo invertido.",
+      "valor": 0.5,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Desviación angular en la fase de apoyo (Paloma y Tsukahara)",
+      "valor": 0.1,
+      "criterios": "≤ 30º"
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Desviación angular en la fase de apoyo (Paloma y Tsukahara)",
+      "valor": 0.3,
+      "criterios": ">30 a 60º"
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Errores de ejecución en la 2ª fase.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Errores de ejecución en la 2ª fase.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Errores de ejecución en la 2ª fase.",
+      "valor": 0.5,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Errores técnicos en la 2ª fase.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Errores técnicos en la 2ª fase.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Errores técnicos en la 2ª fase.",
+      "valor": 0.5,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Altura insuficiente, altura del cuerpo no adecuada.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Altura insuficiente, altura del cuerpo no adecuada.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Altura insuficiente, altura del cuerpo no adecuada.",
+      "valor": 0.5,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Falta de extensión en la preparación de la recepción.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Salto",
+      "ID_Aparato": 4,
+      "tipo": "E",
+      "descripcion": "Falta de extensión en la preparación de la recepción.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Barras Paralelas",
+      "ID_Aparato": 5,
+      "tipo": "D",
+      "descripcion": "No respetar el tiempo oficial de calentamiento (50’’).",
+      "valor": 0.3,
+      "criterios": "0.30 de la nota final (Juez D1) en la competición individual o 1.00 de la nota del equipo en la competición de equipos."
+    },
+    {
+      "aparato": "Barras Paralelas",
+      "ID_Aparato": 5,
+      "tipo": "E",
+      "descripcion": "Impulso de una pierna para subir.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Barras Paralelas",
+      "ID_Aparato": 5,
+      "tipo": "E",
+      "descripcion": "Corte de vuelo en los impulsos atrás.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Barras Paralelas",
+      "ID_Aparato": 5,
+      "tipo": "E",
+      "descripcion": "Falta de control momentáneo en los apoyos invertidos pasajeros en 1 o 2 bandas sin control.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Barras Paralelas",
+      "ID_Aparato": 5,
+      "tipo": "E",
+      "descripcion": "Elementos del tipo Chiarlo, excesiva separación de manos y/o desviación del cuerpo (cada vez).",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Barras Paralelas",
+      "ID_Aparato": 5,
+      "tipo": "E",
+      "descripcion": "Elementos del tipo Chiarlo, excesiva separación de manos y/o desviación del cuerpo (cada vez).",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Barras Paralelas",
+      "ID_Aparato": 5,
+      "tipo": "E",
+      "descripcion": "Elementos del tipo Chiarlo, excesiva separación de manos y/o desviación del cuerpo (cada vez).",
+      "valor": 0.5,
+      "criterios": null
+    },
+    {
+      "aparato": "Barras Paralelas",
+      "ID_Aparato": 5,
+      "tipo": "E",
+      "descripcion": "Elemento previo.",
+      "valor": 0.5,
+      "criterios": null
+    },
+    {
+      "aparato": "Barras Paralelas",
+      "ID_Aparato": 5,
+      "tipo": "E",
+      "descripcion": "Falta de extensión en la horizontal del agarre después de los mortales o agarre incontrolado después de los mortales.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Barras Paralelas",
+      "ID_Aparato": 5,
+      "tipo": "E",
+      "descripcion": "Falta de extensión en la horizontal del agarre después de los mortales o agarre incontrolado después de los mortales.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Barras Paralelas",
+      "ID_Aparato": 5,
+      "tipo": "E",
+      "descripcion": "Falta de extensión en la horizontal del agarre después de los mortales o agarre incontrolado después de los mortales.",
+      "valor": 0.5,
+      "criterios": null
+    },
+    {
+      "aparato": "Barras Paralelas",
+      "ID_Aparato": 5,
+      "tipo": "E",
+      "descripcion": "Paso o ajuste de manos en apoyo invertido.",
+      "valor": 0.1,
+      "criterios": "+\ncada vez"
+    },
+    {
+      "aparato": "Barras Paralelas",
+      "ID_Aparato": 5,
+      "tipo": "E",
+      "descripcion": "Doblar piernas en los Moy y molinos antes de la horizontal",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Barras Paralelas",
+      "ID_Aparato": 5,
+      "tipo": "E",
+      "descripcion": "Doblar piernas en los Moy y molinos antes de la horizontal",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Barras Paralelas",
+      "ID_Aparato": 5,
+      "tipo": "E",
+      "descripcion": "Después de Bhavsar o elementos similares agarrando horizontalmente en la suspensión larga con piernas dobladas",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Barra Fija",
+      "ID_Aparato": 6,
+      "tipo": "E",
+      "descripcion": "Piernas abiertas u otra mala ejecución para saltar o subir a la barra.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Barra Fija",
+      "ID_Aparato": 6,
+      "tipo": "E",
+      "descripcion": "Falta de impulso o pausa en apoyo invertido o en otro elemento.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Barra Fija",
+      "ID_Aparato": 6,
+      "tipo": "E",
+      "descripcion": "Falta de impulso o pausa en apoyo invertido o en otro elemento.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Barra Fija",
+      "ID_Aparato": 6,
+      "tipo": "E",
+      "descripcion": "Baja amplitud en las sueltas.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Barra Fija",
+      "ID_Aparato": 6,
+      "tipo": "E",
+      "descripcion": "Baja amplitud en las sueltas.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Barra Fija",
+      "ID_Aparato": 6,
+      "tipo": "E",
+      "descripcion": "Desviación del plano de movimiento.",
+      "valor": 0.1,
+      "criterios": "≤ 15°"
+    },
+    {
+      "aparato": "Barra Fija",
+      "ID_Aparato": 6,
+      "tipo": "E",
+      "descripcion": "Desviación del plano de movimiento.",
+      "valor": 0.3,
+      "criterios": ">15°"
+    },
+    {
+      "aparato": "Barra Fija",
+      "ID_Aparato": 6,
+      "tipo": "E",
+      "descripcion": "Corte de vuelo en los impulsos atrás.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Barra Fija",
+      "ID_Aparato": 6,
+      "tipo": "E",
+      "descripcion": "Elementos ilegales con o desde pies en la barra.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Barra Fija",
+      "ID_Aparato": 6,
+      "tipo": "E",
+      "descripcion": "Brazos doblados al agarrar después de las sueltas.",
+      "valor": 0.1,
+      "criterios": null
+    },
+    {
+      "aparato": "Barra Fija",
+      "ID_Aparato": 6,
+      "tipo": "E",
+      "descripcion": "Brazos doblados al agarrar después de las sueltas.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Barra Fija",
+      "ID_Aparato": 6,
+      "tipo": "E",
+      "descripcion": "Doblar piernas durante las acciones de impuso.",
+      "valor": 0.1,
+      "criterios": "+\ncada vez"
+    },
+    {
+      "aparato": "Barra Fija",
+      "ID_Aparato": 6,
+      "tipo": "E",
+      "descripcion": "Doblar piernas durante las acciones de impuso.",
+      "valor": 0.3,
+      "criterios": "+\ncada vez"
+    },
+    {
+      "aparato": "Barra Fija",
+      "ID_Aparato": 6,
+      "tipo": "E",
+      "descripcion": "Elementos que no continúan en la dirección pretendida.",
+      "valor": 0.3,
+      "criterios": "+ sin rec."
+    },
+    {
+      "aparato": "Barra Fija",
+      "ID_Aparato": 6,
+      "tipo": "E",
+      "descripcion": "Sueltas con mortal sobre la barra sin realizar un molino después.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Barra Fija",
+      "ID_Aparato": 6,
+      "tipo": "E",
+      "descripcion": "Desviación angular desde el apoyo invertido en la entrada de Endos, Stalders y Weilers.",
+      "valor": 0.3,
+      "criterios": null
+    },
+    {
+      "aparato": "Barra Fija",
+      "ID_Aparato": 6,
+      "tipo": "E",
+      "descripcion": "Impulso adicional en el comienzo del ejercicio",
+      "valor": 0.3,
+      "criterios": null
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+@startuml
+skinparam documentBackgroundColor #FFFFFF
+skinparam arrowColor #2C3E50
+left header
+<b><size:16>Análisis de Estimación de Esfuerzo (COCOMO II)</size></b>
+Sistema Gimnasia Unificada — Proyecto2
+</b>
+end header
+
+@startuml
+!define TABLE_COLOR #F5F5F5
+skinparam defaultFontName Segoe UI
+skinparam documentBorderColor #2C3E50

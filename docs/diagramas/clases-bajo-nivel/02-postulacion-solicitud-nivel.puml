@@ -1,0 +1,161 @@
+@startuml
+skinparam classBorderColor #2C3E50
+skinparam arrowColor #2C3E50
+skinparam defaultFontName Segoe UI
+skinparam classFontSize 10
+
+package "Modelos" #D4E6F1 {
+  class Postulacion {
+    {field} +ID_Postulacion : int (PK) {auto_increment}
+    {field} +Email : string(100)
+    {field} +Nombre : string(50)
+    {field} +Apellido : string(50)
+    {field} +FechaNacimiento : date
+    {field} +Nacionalidad : string(50)
+    {field} +CedulaIdentidad : string(20)
+    {field} +Peso : decimal(5,2)
+    {field} +Altura : decimal(5,2)
+    {field} +IMC : decimal(4,1)
+    {field} +Edad : int
+    {field} +Nivel : string(20) {Principiante|Intermedio|Avanzado|Elite}
+    {field} +estado : enum('pendiente','aprobada','rechazada')
+    {field} +recomendaciones_sistema : text
+    {field} +comentarios : text
+    {field} +fecha_postulacion : datetime
+    {field} +fecha_revision : datetime
+    {field} +revisado_por : int (FK → usuarios.ID_Usuario)
+    {method} +revisor() : BelongsTo<Usuario>
+    {method} +validarCedula(cedula: string, pais: string) : bool
+    {method} +generarRecomendaciones(atributos: array) : string
+    {method} +scopePendientes(Builder) : Builder
+  }
+
+  class SolicitudNivel {
+    {field} +ID_Solicitud : int (PK) {auto_increment}
+    {field} +ID_Gimnasta : int (FK → usuarios.ID_Usuario)
+    {field} +nivel_actual : string(20)
+    {field} +nivel_solicitado : string(20)
+    {field} +tipo : enum('evaluacion','recomendacion')
+    {field} +ID_Entrenador : int (FK → usuarios.ID_Usuario)
+    {field} +estado : enum('pendiente','aprobada','rechazada')
+    {field} +comentarios_gimnasta : text
+    {field} +comentarios_entrenador : text
+    {field} +comentarios_admin : text
+    {field} +fecha_solicitud : datetime
+    {field} +fecha_respuesta : datetime
+    {field} +aprobado_por : int (FK → usuarios.ID_Usuario)
+    {method} +gimnasta() : BelongsTo<Usuario>
+    {method} +entrenador() : BelongsTo<Usuario>
+    {method} +aprobador() : BelongsTo<Usuario>
+    {method} +siguienteNivel(actual: string) : string|null
+    {method} +puedeSubirNivel(gimnasta: Usuario) : bool
+    {method} +scopePendientes(Builder) : Builder
+    {method} +scopeAprobadas(Builder) : Builder
+    {method} +scopeRechazadas(Builder) : Builder
+    {field} +NIVELES : array = ['Principiante'=>1,'Intermedio'=>2,'Avanzado'=>3,'Elite'=>4]
+  }
+
+  class Usuario {
+    {field} +ID_Usuario : int (PK)
+    {field} +CedulaIdentidad : string(20)
+    {field} +Email : string(100)
+    {field} +Nombre : string(50)
+    {field} +Apellido : string(50)
+    {field} +FechaNacimiento : date
+    {field} +Nivel : string(20)
+    {method} +solicitudesNivel() : HasMany<SolicitudNivel>
+    {method} +recomendacionesNivel() : HasMany<SolicitudNivel>
+  }
+}
+
+package "Controladores" #F9E79F {
+  class PostulacionController {
+    {method} +__construct()
+    {method} +index() : View
+    {method} +aprobar(id: int) : RedirectResponse
+    {method} +rechazar(id: int, Request) : RedirectResponse
+    {method} +detalle(id: int) : View
+  }
+
+  class SolicitudNivelController {
+    {method} +index() : View {gimnasta: lista de sus solicitudes}
+    {method} +store(Request) : RedirectResponse
+    {method} +indexEntrenador() : View {entrenador: solicitudes de sus gimnastas}
+    {method} +recomendar(Request) : RedirectResponse
+    {method} +indexAdmin() : View {admin: todas las solicitudes}
+    {method} +aprobar(id: int) : RedirectResponse {admin aprueba definitivo}
+    {method} +rechazar(id: int) : RedirectResponse {admin rechaza definitivo}
+    {method} +aprobarEntrenador(id: int) : RedirectResponse {entrenador recomienda aprobar}
+    {method} +rechazarEntrenador(id: int) : RedirectResponse {entrenador recomienda rechazar}
+  }
+
+  class UsuarioUnificadoController {
+    {method} +index() : View
+    {method} +store(StoreUsuarioRequest) : RedirectResponse
+    {method} +create() : View
+    {method} +edit(id: int) : View
+    {method} +update(UpdateUsuarioRequest, id: int) : RedirectResponse
+    {method} +destroy(id: int) : RedirectResponse
+    {method} +reactivar(id: int) : RedirectResponse
+    {method} +getRoles() : JsonResponse
+  }
+}
+
+package "Servicios" #D5F5E3 {
+  class AuditService {
+    {method} +log(evento, detalles) : void
+    {method} +created(model) : void
+  }
+
+  class SanitizationService {
+    {method} +sanitizeString(input) : string
+    {method} +sanitizeEmail(email) : string
+  }
+}
+
+package "Middleware" #FADBD8 {
+  class ValidatePostulacion {
+    {field} -maxAttempts : int = 10
+    {field} -decayMinutes : int = 5
+    {method} +handle(Request, Closure) : Response
+  }
+
+  class CheckPermission {
+    {method} +handle(Request, Closure, permiso: string) : Response
+  }
+}
+
+' ===== RELACIONES =====
+PostulacionController ..> Postulacion : CRUD
+PostulacionController ..> Usuario : <<crea al aprobar>>
+PostulacionController ..> AuditService : <<registra>>
+PostulacionController ..> SanitizationService : <<sanitiza>>
+PostulacionController ..> UsuarioUnificadoController : <<llama>>
+
+SolicitudNivelController ..> SolicitudNivel : CRUD
+SolicitudNivelController ..> Usuario : consulta
+SolicitudNivelController ..> AuditService : <<registra>>
+
+ValidatePostulacion ..> PostulacionController : <<rate_limit>>
+CheckPermission ..> PostulacionController : <<permiso: postulaciones.*>>
+CheckPermission ..> SolicitudNivelController : <<permiso: niveles.*>>
+
+Postulacion "N" -- "1" Usuario : FK: revisado_por
+SolicitudNivel "N" -- "1" Usuario : FK: ID_Gimnasta
+SolicitudNivel "N" -- "1" Usuario : FK: ID_Entrenador
+SolicitudNivel "N" -- "1" Usuario : FK: aprobado_por
+
+legend bottom
+  **Flujo Postulación:**
+  1. Aspirante llena formulario (público, sin auth)
+  2. Postulacion::generarRecomendaciones() calcula sugerencias
+  3. Admin revisa en PostulacionController@index
+  4. Admin aprueba → se crea Usuario automáticamente
+
+  **Flujo Solicitud de Nivel:**
+  1. Gimnasta solicita subir nivel (store)
+  2. Entrenador revisa y recomienda (recomendar)
+  3. Admin aprueba/rechaza definitivo (aprobar/rechazar)
+  4. Al aprobar → Usuario.Nivel se actualiza
+endlegend
+@enduml

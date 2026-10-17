@@ -1,0 +1,36 @@
+@startuml
+actor "Gimnasta" as gymnast
+participant "SolicitudView" as view
+participant "SolicitudNivelController" as ctrl
+participant "SolicitudNivel" as model
+participant "AuditService" as audit
+actor "Entrenador" as coach
+participant "EntrenadorController" as coachCtrl
+
+gymnast -> view: 1: Solicita cambio\nde nivel
+view -> ctrl: 2: store(request)
+ctrl -> model: 3: create([ID_Gimnasta,\nnivel_actual,\nnivel_solicitado,\ntipo=>'evaluacion'])
+ctrl <-- model: 4: Solicitud creada\n(estado=pendiente)
+ctrl -> audit: 5: log("Solicitud nivel creada")
+ctrl -> gymnast: 6: Confirmación
+
+coach -> view: 7: Ve solicitudes\nde sus gimnastas
+view -> coachCtrl: 8: indexEntrenador()
+coachCtrl -> model: 9: where('ID_Entrenador', $id)
+coachCtrl <-- model: 10: Solicitudes pendientes
+coachCtrl -> coach: 11: Lista de solicitudes
+
+coach -> view: 12: Recomienda aprobar\nsolicitud
+view -> ctrl: 13: recomendar($id)
+ctrl -> model: 14: update(['tipo'=>'recomendacion',\n'ID_Entrenador'=>$id,\n'comentarios_entrenador'=>$txt])
+ctrl -> audit: 15: log("Entrenador recomendó")
+ctrl -> coach: 16: Confirmación
+
+actor "Admin" as admin
+admin -> view: 17: Aprueba solicitud\nrecomendada
+view -> ctrl: 18: aprobar($id)
+ctrl -> model: 19: update(['estado'=>'aprobada',\n'aprobado_por'=>$admin])
+ctrl -> model: 20: gimnasta()->update(['Nivel'=>$nuevo])
+ctrl -> audit: 21: log("Nivel actualizado")
+ctrl -> admin: 22: Confirmación
+@enduml
